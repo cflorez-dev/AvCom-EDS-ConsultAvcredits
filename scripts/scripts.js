@@ -176,6 +176,62 @@ function loadDelayed() {
   // load anything that can be postponed to the latest here
 }
 
+// Resuelve un bloque priorizando el override del sitio sobre el Core 
+async function resolveBlockModule(name) { 
+  try { 
+    // 1. Override específico de site-a (si existe, gana siempre)
+    return await import(`/blocks/${name}/${name}.js`);
+  } catch (e) { 
+    // 2. Fallback: bloque heredado del Core (submodule)
+    return await import(`/core/blocks/${name}/${name}.js`); 
+  } 
+} 
+
+export async function loadBlock(block) {
+  const name = block.dataset.blockName; 
+  if (block.dataset.blockStatus !== 'loading' && block.dataset.blockStatus !== 'loaded') { 
+    block.dataset.blockStatus = 'loading'; 
+    try { 
+      const mod = await resolveBlockModule(name); 
+      // También el CSS del bloque sigue la misma prioridad (ver sección 5) 
+      await loadBlockCSS(name); 
+      if (mod.default) { 
+        await mod.default(block); 
+      } 
+    } catch (error) { 
+      // eslint-disable-next-line no-console 
+      console.error(`No se pudo cargar el bloque ${name}`, error); 
+    } 
+    block.dataset.blockStatus = 'loaded'; 
+  } 
+  return block; 
+}
+
+async function loadCSS(href) { 
+  return new Promise((resolve, reject) => { 
+    if (document.querySelector(`head > link[href="${href}"]`)) { 
+      resolve(); 
+      return; 
+    } 
+    const link = document.createElement('link'); 
+    link.rel = 'stylesheet'; 
+    link.href = href; 
+    link.onload = resolve; 
+    link.onerror = reject; 
+    document.head.append(link); 
+  }); 
+} 
+
+async function loadBlockCSS(name) { 
+  try { 
+    await loadCSS(`/blocks/${name}/${name}.css`); 
+    // override del sitio 
+  } catch { 
+    await loadCSS(`/core/blocks/${name}/${name}.css`); 
+    // fallback al Core 
+  } 
+}
+
 async function loadPage() {
   await loadEager(document);
   await loadLazy(document);
