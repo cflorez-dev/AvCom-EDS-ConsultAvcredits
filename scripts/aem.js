@@ -490,7 +490,7 @@ function decorateSections(main) {
     wrappers.forEach((wrapper) => section.append(wrapper));
     section.classList.add('section');
     section.dataset.sectionStatus = 'initialized';
-    section.style.display = 'none';
+    section.style.display = 'block';
 
     // Process section metadata
     const sectionMeta = section.querySelector('div.section-metadata');
@@ -543,6 +543,27 @@ function buildBlock(blockName, content) {
   return blockEl;
 }
 
+// Resuelve un bloque priorizando el override del sitio sobre el Core 
+async function resolveBlockModule(name) { 
+  try { 
+    // 1. Override específico de site-a (si existe, gana siempre)
+    return await import(`/blocks/${name}/${name}.js`);
+  } catch (e) { 
+    // 2. Fallback: bloque heredado del Core (submodule)
+    return await import(`/core/blocks/${name}/${name}.js`); 
+  } 
+} 
+
+async function loadBlockCSS(name) { 
+  try { 
+    // override del sitio 
+    return await loadCSS(`${window.hlx.codeBasePath}/blocks/${name}/${name}.css`); 
+  } catch { 
+    // fallback al Core 
+    return await loadCSS(`${window.hlx.codeBasePath}/core/blocks/${name}/${name}.css`);
+  } 
+}
+
 /**
  * Loads JS and CSS for a block.
  * @param {Element} block The block element
@@ -553,13 +574,11 @@ async function loadBlock(block) {
     block.dataset.blockStatus = 'loading';
     const { blockName } = block.dataset;
     try {
-      const cssLoaded = loadCSS(`${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.css`);
+      const cssLoaded = await loadBlockCSS(blockName);
       const decorationComplete = new Promise((resolve) => {
         (async () => {
           try {
-            const mod = await import(
-              `${window.hlx.codeBasePath}/blocks/${blockName}/${blockName}.js`
-            );
+            const mod = await resolveBlockModule(blockName);
             if (mod.default) {
               await mod.default(block);
             }

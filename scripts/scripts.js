@@ -166,6 +166,13 @@ async function loadLazy(doc) {
   loadFonts();
 }
 
+  // Non-critical global CSS (moved from head.html to avoid render-blocking).
+  // sections.css is awaited at the top of loadLazy (preloaded in head.html).
+  loadCSS(`${window.hlx.codeBasePath}/core/styles/components/component.css`);
+  loadCSS(`${window.hlx.codeBasePath}/core/styles/components/custom-scrollbar.css`);
+  loadCSS(`${window.hlx.codeBasePath}/core/styles/migration-cards.css`);
+  loadCSS(`${window.hlx.codeBasePath}/core/styles/utilities.css`);
+
 /**
  * Loads everything that happens a lot later,
  * without impacting the user experience.
