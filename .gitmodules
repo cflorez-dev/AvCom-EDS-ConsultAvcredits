@@ -1,4 +1,4 @@
 [submodule "core"]
 	path = core
 	url = https://aviancavsts.visualstudio.com/DigitalChannels/_git/AvCom-EDS-Core
-	branch = main
+	branch = dev
