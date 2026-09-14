@@ -1160,12 +1160,12 @@ async function loadLazy(doc) {
     console.warn('[scripts] Darksite chrome failed (fail-open):', error);
   }
 
-  if (!darksiteChromeLoaded) {
+  /* if (!darksiteChromeLoaded) {
     await Promise.all([
       headerElement ? loadHeader(headerElement) : Promise.resolve(),
       loadFooter(doc.querySelector('footer')),
     ]);
-  }
+  } */
 
   // If header exists, wait for header-template-ready event to ensure header structure is ready
   // This ensures the header containers exist and child blocks have rendered

@@ -1894,6 +1894,19 @@
     ]
   },
   {
+    "id": "breadcrumb",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "slug",
+        "label": "Custom Last Item Text",
+        "value": "",
+        "description": "Optional custom text for the last breadcrumb item. If empty, uses the page title from URL path."
+      }
+    ]
+  },
+  {
     "id": "cms-new-hero-banner",
     "fields": [
       {
@@ -2356,6 +2369,352 @@
         "label": "Button URL",
         "value": "",
         "description": "URL del action button. Acepta paths internos o externos."
+      }
+    ]
+  },
+  {
+    "id": "form-header-banner",
+    "fields": [
+      {
+        "component": "multiselect",
+        "name": "target-countries",
+        "label": "Target Countries (POS)",
+        "valueType": "string",
+        "description": "Optional: Select target countries/POS. If empty, shows in all. Compared against 'selected-country' cookie (ISO-2 codes).",
+        "options": [
+          {
+            "name": "Argentina",
+            "value": "ar"
+          },
+          {
+            "name": "Bolivia",
+            "value": "bo"
+          },
+          {
+            "name": "Brasil",
+            "value": "br"
+          },
+          {
+            "name": "Canadá",
+            "value": "ca"
+          },
+          {
+            "name": "Chile",
+            "value": "cl"
+          },
+          {
+            "name": "Colombia",
+            "value": "co"
+          },
+          {
+            "name": "Costa Rica",
+            "value": "cr"
+          },
+          {
+            "name": "República Dominicana",
+            "value": "do"
+          },
+          {
+            "name": "Ecuador",
+            "value": "ec"
+          },
+          {
+            "name": "España",
+            "value": "eu"
+          },
+          {
+            "name": "Francia",
+            "value": "fr"
+          },
+          {
+            "name": "Reino Unido",
+            "value": "gb"
+          },
+          {
+            "name": "Guatemala",
+            "value": "gt"
+          },
+          {
+            "name": "Honduras",
+            "value": "hn"
+          },
+          {
+            "name": "México",
+            "value": "mx"
+          },
+          {
+            "name": "Nicaragua",
+            "value": "ni"
+          },
+          {
+            "name": "Otros",
+            "value": "ot"
+          },
+          {
+            "name": "Panamá",
+            "value": "pa"
+          },
+          {
+            "name": "Perú",
+            "value": "pe"
+          },
+          {
+            "name": "Paraguay",
+            "value": "py"
+          },
+          {
+            "name": "El Salvador",
+            "value": "sv"
+          },
+          {
+            "name": "Estados Unidos",
+            "value": "us"
+          },
+          {
+            "name": "Uruguay",
+            "value": "uy"
+          },
+          {
+            "name": "Alemania",
+            "value": "de"
+          },
+          {
+            "name": "Italia",
+            "value": "it"
+          },
+          {
+            "name": "Portugal",
+            "value": "pt"
+          },
+          {
+            "name": "Venezuela",
+            "value": "ve"
+          }
+        ]
+      },
+      {
+        "component": "multiselect",
+        "name": "target-languages",
+        "label": "Target Languages",
+        "valueType": "string",
+        "description": "Optional: Select target languages. If empty, shows in all. Compared against 'selected-language' cookie.",
+        "options": [
+          {
+            "name": "English",
+            "value": "en"
+          },
+          {
+            "name": "Spanish",
+            "value": "es"
+          },
+          {
+            "name": "French",
+            "value": "fr"
+          },
+          {
+            "name": "Portuguese",
+            "value": "pt"
+          }
+        ]
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Banner Image",
+        "multi": false,
+        "description": "Main banner image"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "imageAlt",
+        "label": "Image Alt Text",
+        "value": "",
+        "description": "Alternative text for the image (accessibility)"
+      },
+      {
+        "component": "select",
+        "name": "loading",
+        "label": "Image Loading Mode",
+        "options": [
+          {
+            "name": "Lazy",
+            "value": "lazy"
+          },
+          {
+            "name": "Eager",
+            "value": "eager"
+          }
+        ],
+        "value": "eager",
+        "description": "Image loading strategy (eager for above-the-fold content)"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "titleText",
+        "label": "Title Text",
+        "value": "",
+        "description": "Main title text"
+      },
+      {
+        "component": "select",
+        "name": "titleLevel",
+        "label": "Title Level",
+        "options": [
+          {
+            "name": "H1",
+            "value": "h1"
+          },
+          {
+            "name": "H2",
+            "value": "h2"
+          },
+          {
+            "name": "H3",
+            "value": "h3"
+          },
+          {
+            "name": "H4",
+            "value": "h4"
+          },
+          {
+            "name": "H5",
+            "value": "h5"
+          },
+          {
+            "name": "H6",
+            "value": "h6"
+          }
+        ],
+        "value": "h1",
+        "description": "Semantic heading level for the title"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "subtitleText",
+        "label": "Subtitle Text",
+        "value": "",
+        "description": "Secondary text or subtitle"
+      },
+      {
+        "component": "select",
+        "name": "subtitleLevel",
+        "label": "Subtitle Level",
+        "options": [
+          {
+            "name": "H2",
+            "value": "h2"
+          },
+          {
+            "name": "H3",
+            "value": "h3"
+          },
+          {
+            "name": "H4",
+            "value": "h4"
+          },
+          {
+            "name": "H5",
+            "value": "h5"
+          },
+          {
+            "name": "H6",
+            "value": "h6"
+          },
+          {
+            "name": "Paragraph",
+            "value": "p"
+          }
+        ],
+        "value": "p",
+        "description": "Semantic level for the subtitle"
+      },
+      {
+        "component": "select",
+        "name": "formType",
+        "label": "Form Type",
+        "options": [
+          {
+            "name": "Cabin Upgrade Form",
+            "value": "cabin-upgrade"
+          },
+          {
+            "name": "MMB Form",
+            "value": "mmb"
+          },
+          {
+            "name": "SSCI Form",
+            "value": "ssci"
+          }
+        ],
+        "value": "cabin-upgrade",
+        "description": "Type of form to display in the banner"
+      },
+      {
+        "component": "boolean",
+        "name": "showAlert",
+        "label": "Show Alert",
+        "value": false,
+        "description": "Display alert message after the form"
+      },
+      {
+        "component": "select",
+        "name": "alertType",
+        "label": "Alert Type",
+        "options": [
+          {
+            "name": "Info",
+            "value": "info"
+          },
+          {
+            "name": "Success",
+            "value": "success"
+          },
+          {
+            "name": "Warning",
+            "value": "warning"
+          },
+          {
+            "name": "Error",
+            "value": "error"
+          }
+        ],
+        "value": "info",
+        "description": "Visual style of the alert"
+      },
+      {
+        "component": "boolean",
+        "name": "alertDismissible",
+        "label": "Alert Dismissible",
+        "value": true,
+        "description": "Allow users to close the alert"
+      },
+      {
+        "component": "richtext",
+        "name": "alertContent",
+        "label": "Alert Content",
+        "valueType": "string",
+        "value": "",
+        "description": "Rich text content for the alert message"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "modalImage",
+        "label": "Modal Image",
+        "multi": false,
+        "description": "Image displayed inside the modal"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "modalImageAlt",
+        "label": "Modal Image Alt Text",
+        "value": "",
+        "description": "Alternative text for the modal image (accessibility)"
       }
     ]
   },
