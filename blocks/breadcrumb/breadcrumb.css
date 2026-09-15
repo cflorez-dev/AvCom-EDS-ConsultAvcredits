@@ -1,0 +1,7 @@
+.section.breadcrumb-container.cms-new-hero-banner-container .breadcrumb-wrapper-wrapper {
+  padding: 32px var(--main-section-div-padding, 16px);
+  padding-top: 24px;
+  padding-bottom: 0;
+  position: absolute;
+  z-index: 1;
+}
