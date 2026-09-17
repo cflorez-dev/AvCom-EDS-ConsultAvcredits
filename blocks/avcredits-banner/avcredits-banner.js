@@ -52,7 +52,7 @@ export default function decorate(block) {
 
   // 4. Renderizar el componente Preact con los datos de AEM
   render(
-    html`<${AvCreditsBanner} ...${props} />`,
+    html`<${AvCreditsBanner}/>`,
     container
   );
 }
