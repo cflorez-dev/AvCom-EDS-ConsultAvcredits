@@ -43,6 +43,16 @@
   letter-spacing: inherit;
 }
 
+.heading-h700,
+.heading-h700 * {
+  font-family: var(--family-red-hat-display, "Red Hat Display");
+  font-size: var(--size-x-x-large, 28px);
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: var(--letter-spacing-normal, 0);
+}
+
 .heading-h800,
 .heading-h800 * {
   font-family: var(--heading-h800-family);
