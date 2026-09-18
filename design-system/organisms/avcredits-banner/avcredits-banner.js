@@ -52,14 +52,16 @@ const StatusIcon = ({ estado }) => {
 };
 
 export const AvCreditsBanner = ({
-  saldo = 'Saldo actual',
-  titular = 'Titular',
-  numeroCredit = 'avianca credits N° ********8901',
-  tipo = 'Tipo:',
-  estado = 'Estado:',
-  fechaExpedicion = 'Fecha de expedición',
-  fechaVencimiento = 'Fecha de vencimiento',
-  saldoInicial = 'Saldo inicial'
+  headerTitleHTML = '',
+  headerIconData = null,
+  currentBalance = 'COP 300.000',
+  holderName = 'Juan Sebastián Cruz',
+  avCreditsNumber = '8901',
+  typeRefund = 'Reembolsable',
+  statusAvCredits = 'Activo',
+  issueDate = 'Ene 30, 2026',
+  expiryDate = 'Ene 30, 2027',
+  openingBalance = 'COP 1.567.098'
 }) => {
   const [labels, setLabels] = useState({});
 
@@ -67,22 +69,22 @@ export const AvCreditsBanner = ({
     const loadLabels = async () => {
       if (!i18Cache) {
         const cookieLanguage = getStoredLanguage() || 'es';
-        const i18Data = await fetchAEMData(`${cookieLanguage}`);
+        const i18Data = await fetchAEMData(`i18/${cookieLanguage}`);
         i18Cache = i18Data?.data || [];
         if (cookieLanguage !== 'es' && !i18FallbackCache) {
-          const esFallback = await fetchAEMData('es');
+          const esFallback = await fetchAEMData('i18/es');
           i18FallbackCache = esFallback?.data || [];
         }
       }
       setLabels({
-        balanceText: getI18nLabel('avCreditsBanner.balanceText', 'Solicitar ascenso'),
-        holderText: getI18nLabel('avCreditsBanner.holderText', 'Código de reserva'),
-        numberAvCreditsText: getI18nLabel('avCreditsBanner.numberAvCreditsText', 'Apellido'),
-        typeText: getI18nLabel('avCreditsBanner.typeText', 'Tal y como aparece(n) en la reserva'),
-        statusText: getI18nLabel('avCreditsBanner.statusText', 'El código de reserva es obligatorio'),
-        issueDateText: getI18nLabel('avCreditsBanner.issueDateText', 'El apellido es obligatorio'),
-        expiryDateText: getI18nLabel('avCreditsBanner.expiryDateText', 'Cargando...'),
-        openingBalanceText: getI18nLabel('avCreditsBanner.openingBalanceText', '¡Ups! Algo salió mal'),
+        balanceText: getI18nLabel('avCreditsBanner.balanceText', 'Saldo actual'),
+        holderText: getI18nLabel('avCreditsBanner.holderText', 'Titular'),
+        numberAvCreditsText: getI18nLabel('avCreditsBanner.numberAvCreditsText', 'avianca credits N° ********'),
+        typeText: getI18nLabel('avCreditsBanner.typeText', 'Tipo:'),
+        statusText: getI18nLabel('avCreditsBanner.statusText', 'Estado:'),
+        issueDateText: getI18nLabel('avCreditsBanner.issueDateText', 'Fecha de expedición'),
+        expiryDateText: getI18nLabel('avCreditsBanner.expiryDateText', 'Fecha de vencimiento'),
+        openingBalanceText: getI18nLabel('avCreditsBanner.openingBalanceText', 'Saldo inicial'),
       });
     };
     loadLabels();
@@ -96,12 +98,10 @@ export const AvCreditsBanner = ({
         
         <!-- Cabecera Verde -->
         <div class="avcredits-ticket-header">
-          <span class="text-white"><b>avianca</b> credits</span>
-          <svg xmlns="http://www.w3.org/2000/svg" width="31" height="35" viewBox="0 0 31 35" fill="none">
-            <path d="M18.3179 27.0214H21.4422C22.7419 27.0214 23.3151 27.1283 23.6784 27.3009C23.1213 25.5417 21.3695 24.177 15.2016 23.7085C16.1866 24.8676 17.2199 25.9856 18.3179 27.0296V27.0214Z" fill="white"/>
-            <path d="M15.2097 23.7084C9.21948 16.6222 5.18293 7.55481 3.5683 0C3.5683 0 0.274466 2.95945 0.0161267 9.17428C-0.274505 15.9728 3.30996 22.8206 15.0967 23.692C15.1371 23.692 15.1774 23.692 15.2097 23.7084Z" fill="white"/>
-            <path d="M18.3179 27.0214C13.6677 27.0214 5.64311 27.0214 5.64311 27.0214C5.81264 27.4242 6.3939 27.7037 7.70982 27.7859C15.6215 28.2627 16.7355 34.5844 28.0621 34.5844C29.0551 34.5844 29.6767 34.5269 30.2984 34.4036C25.8259 33.0061 21.8055 30.3672 18.3098 27.0214L18.3179 27.0214Z" fill="white"/>
-          </svg>
+          <span class="text-white" dangerouslySetInnerHTML=${{ __html: headerTitleHTML }}></span>
+          ${headerIconData?.src ? html`
+            <img src="${headerIconData.src}" alt="${headerIconData.alt}" width="31" height="35" />
+          ` : null}
         </div>
 
         <!-- Cuerpo del Tiquete con Muescas (Notches) -->
@@ -111,12 +111,12 @@ export const AvCreditsBanner = ({
 
           <div class="flex flex-col gap-small">
             <span class="paragraph-p300 text-primary">${labels.balanceText}</span>
-            <span class="heading-h700 text-primary">COP 300.000</span>
+            <span class="heading-h700 text-primary">${currentBalance}</span>
           </div>
 
           <div class="flex flex-col gap-small">
             <span class="paragraph-p300 text-secondary">${labels.holderText}</span>
-            <span class="paragraph-p300 font-medium text-primary">Juan Sebastián Cruz</span>
+            <span class="paragraph-p300 font-medium text-primary">${holderName}</span>
           </div>
         </div>
       </div>
@@ -126,12 +126,12 @@ export const AvCreditsBanner = ({
         
         <!-- Info Superior -->
         <div class="flex flex-col gap-x-small">
-          <h3 class="heading-h400 text-primary m-0!">${labels.numberAvCreditsText}</h3>
-          <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} Reembolsable</p>
+          <h3 class="heading-h400 text-primary m-0!">${labels.numberAvCreditsText}${avCreditsNumber}</h3>
+          <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} ${typeRefund}</p>
           <div class="flex items-center gap-x-small">
             <span class="paragraph-p300 text-secondary">${labels.statusText}</span>
-            <${StatusIcon} estado='Activo' />
-            <span class="paragraph-p300 font-medium text-secondary">Activo</span>
+            <${StatusIcon} estado=${statusAvCredits} />
+            <span class="paragraph-p300 font-medium text-secondary">${statusAvCredits}</span>
           </div>
         </div>
 
@@ -141,15 +141,15 @@ export const AvCreditsBanner = ({
         <div class="avcredits-details-grid">
           <div class="flex flex-col">
             <span class="paragraph-p200 text-secondary">${labels.issueDateText}</span>
-            <span class="paragraph-p300 font-medium text-primary">Ene 30, 2026</span>
+            <span class="paragraph-p300 font-medium text-primary">${issueDate}</span>
           </div>
           <div class="flex flex-col">
             <span class="paragraph-p200 text-secondary">${labels.expiryDateText}</span>
-            <span class="paragraph-p300 font-medium text-primary">Ene 30, 2027</span>
+            <span class="paragraph-p300 font-medium text-primary">${expiryDate}</span>
           </div>
           <div class="flex flex-col">
             <span class="paragraph-p200 text-secondary">${labels.openingBalanceText}</span>
-            <span class="paragraph-p300 font-medium text-primary">COP 1.567.098</span>
+            <span class="paragraph-p300 font-medium text-primary">${openingBalance}</span>
           </div>
         </div>
 

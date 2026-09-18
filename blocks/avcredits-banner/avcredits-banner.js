@@ -13,20 +13,18 @@ function mapBlockOptions(block) {
   const rows = [...block.children];
   const options = {};
 
-  // Mapeamos fila por fila asumiendo el orden exacto de autoría
   rows.forEach((row, index) => {
-    // Tomamos la segunda columna (la primera es el nombre de la propiedad, la segunda es el valor)
-    const value = row.children[1]?.textContent?.trim() || '';
+    const cell = row.children[1];
+    if (!cell) return;
 
     switch (index) {
-      case 0: options.saldoActual = value; break;
-      case 1: options.titular = value; break;
-      case 2: options.numeroCredit = value; break;
-      case 3: options.tipo = value; break;
-      case 4: options.estado = value; break;
-      case 5: options.fechaExpedicion = value; break;
-      case 6: options.fechaVencimiento = value; break;
-      case 7: options.saldoInicial = value; break;
+      case 0:
+        options.headerTitleHTML = cell.innerHTML.trim(); 
+        break;
+      case 1:
+        const img = cell.querySelector('img');
+        options.headerIconData = img ? { src: img.src, alt: img.alt || 'Header Icon' } : null;
+        break;
       default: break;
     }
   });
@@ -52,7 +50,7 @@ export default function decorate(block) {
 
   // 4. Renderizar el componente Preact con los datos de AEM
   render(
-    html`<${AvCreditsBanner}/>`,
+    html`<${AvCreditsBanner} ...${props} />`,
     container
   );
 }
