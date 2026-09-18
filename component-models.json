@@ -2719,6 +2719,27 @@
     ]
   },
   {
+    "id": "avcredits-banner",
+    "fields": [
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "headerTitle",
+        "label": "Header Title",
+        "value": "",
+        "description": "Ticket title. Use the editor to make 'avianca' bold."
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "headerIcon",
+        "label": "Header Icon",
+        "multi": false,
+        "description": "Select the icon in SVG or PNG format."
+      }
+    ]
+  },
+  {
     "id": "accordion-simplified",
     "fields": [
       {
