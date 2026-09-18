@@ -109,12 +109,12 @@ export const AvCreditsBanner = ({
           <div class="avcredits-notch-left"></div>
           <div class="avcredits-notch-right"></div>
 
-          <div class="flex flex-col gap-small">
+          <div class="flex flex-col ticket-col-1 gap-small">
             <span class="paragraph-p300 text-primary">${labels.balanceText}</span>
             <span class="heading-h700 text-primary">${currentBalance}</span>
           </div>
 
-          <div class="flex flex-col gap-small">
+          <div class="flex flex-col ticket-col-2 gap-small">
             <span class="paragraph-p300 text-secondary">${labels.holderText}</span>
             <span class="paragraph-p300 font-medium text-primary">${holderName}</span>
           </div>
