@@ -14,7 +14,7 @@ function mapBlockOptions(block) {
   const options = {};
 
   rows.forEach((row, index) => {
-    const cell = row.children[1];
+    const cell = row.children.length === 2 ? row.children[1] : row.children[0];
     if (!cell) return;
 
     switch (index) {
