@@ -1,7 +1,7 @@
 import { h } from '@dropins/tools/preact.js';
 import { useState, useRef, useEffect, useMemo } from '@dropins/tools/preact-hooks.js';
 import htm from 'htm';
-import { Button } from '../../core/design-system/atoms/button/button.js';
+import { Button } from '../../../core/design-system/atoms/button/button.js';
 
 const html = htm.bind(h);
 

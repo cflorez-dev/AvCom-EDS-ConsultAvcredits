@@ -2,7 +2,7 @@ import { h, render } from '@dropins/tools/preact.js';
 import htm from 'htm';
 import { readBlockConfig } from '../../scripts/aem.js';
 import { shouldShowByTargeting } from '../../core/scripts/utils/target-filter.js';
-import { CustomLanguageSearch } from './custom-language-search.js';
+import { CustomLanguageSearch } from '../../design-system/organisms/lenguage-search/lenguage-search.js';
 
 const html = htm.bind(h);
 const isDesktop = window.matchMedia('(min-width: 768px)');
