@@ -147,7 +147,7 @@ export const CustomLanguageSearch = ({
                 return html`
                   <button
                     key=${lang.value}
-                    class=${`flex items-center w-full px-[16px] py-[12px] text-left transition-colors border-none bg-transparent hover:bg-[#f5f5f5] cursor-pointer 
+                    class=${`flex items-center w-full px-[16px] py-[12px] text-left transition-colors border-none bg-transparent hover:bg-[#1ea93c] cursor-pointer 
                       ${isSelected ? 'border-l-4 border-solid border-[#1ea93c]' : 'border-l-4 border-solid border-transparent pl-[20px]'}`}
                     onClick=${() => handleLanguageSelect(lang.value)}
                     type="button"
