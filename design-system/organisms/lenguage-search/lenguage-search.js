@@ -117,14 +117,16 @@ export const CustomLanguageSearch = ({
           size="sm"
           onClick=${handleDropdownToggle}
           aria-expanded=${isDropdownOpen}
-          customClassName="px-[12px] !rounded-full"
+          data-open=${isDropdownOpen ? 'true' : 'false'}
+          customClassName=${`px-[12px] !rounded-full transition-colors ${isDropdownOpen ? 'force-green-border' : ''}`}
         >
           <div class="flex flex-row items-center gap-[8px]">
+            
             <!-- Ícono de Globo Terráqueo -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="10"></circle>
-              <line x1="2" y1="12" x2="22" y2="12"></line>
               <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              <path d="M2 12h20"></path>
             </svg>
 
             <!-- Idioma actual en mayúsculas -->
@@ -138,35 +140,45 @@ export const CustomLanguageSearch = ({
           </div>
         </${Button}>
 
-        <!-- Dropdown simple de idiomas -->
-        ${isDropdownOpen && html`
-          <div class="absolute top-[calc(100%+8px)] right-0 w-[240px] bg-white rounded-[16px] shadow-[0_4px_16px_rgba(27,27,27,0.2)] py-2 z-[1000] overflow-hidden">
+        ${isDropdownOpen ? html`
+          <div class="absolute top-[calc(100%+8px)] right-0 w-[240px] bg-white rounded-[16px] shadow-[0_4px_16px_rgba(27,27,27,0.2)] py-[8px] z-[1000] overflow-hidden">
             <div class="flex flex-col">
               ${allLanguages.map((lang) => {
                 const isSelected = lang.value === currentLanguage;
+                
                 return html`
                   <button
                     key=${lang.value}
-                    class=${`flex items-center w-full px-[16px] py-[12px] text-left transition-colors border-none bg-transparent hover:bg-[#1ea93c] cursor-pointer 
-                      ${isSelected ? 'border-l-4 border-solid border-[#1ea93c]' : 'border-l-4 border-solid border-transparent pl-[20px]'}`}
+                    class="flex items-center w-full text-left transition-colors cursor-pointer border-y-0 border-r-0 border-solid border-l-4 bg-transparent hover:bg-[#f5f5f5]"
+                    style=${{ 
+                      padding: '12px 16px',
+                      borderLeftColor: isSelected ? '#0b9b3a' : 'transparent'
+                    }}
                     onClick=${() => handleLanguageSelect(lang.value)}
                     type="button"
                     aria-selected=${isSelected}
                   >
-                    <span class=${`m-0 text-[16px] font-[family-name:var(--font-family-primary)] ${isSelected ? 'font-[700] text-[#1b1b1b]' : 'font-[400] text-[#5a5a5a]'}`}>
+                    <span style=${{ 
+                      margin: '0',
+                      fontSize: '16px',
+                      fontFamily: 'var(--font-family-primary)',
+                      fontWeight: isSelected ? '700' : '400',
+                      color: isSelected ? '#1b1b1b' : '#4a4a4a'
+                    }}>
                       ${lang.label || lang.value}
                     </span>
-                    ${isSelected && html`
-                      <svg class="ml-auto w-5 h-5 text-[#1ea93c]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    
+                    ${isSelected ? html`
+                      <svg class="ml-auto" style=${{ color: '#0b9b3a', width: '22px', height: '22px', flexShrink: '0' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
                       </svg>
-                    `}
+                    ` : null}
                   </button>
                 `;
               })}
             </div>
           </div>
-        `}
+        ` : null}
       </div>
     </div>
   `;
