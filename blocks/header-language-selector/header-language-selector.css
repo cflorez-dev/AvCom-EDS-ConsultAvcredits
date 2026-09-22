@@ -1,0 +1,4 @@
+/* Fuerza el borde verde en el botón principal al abrir el dropdown */
+.force-green-border[data-open="true"] {
+  border-color: #0b9b3a !important;
+}
