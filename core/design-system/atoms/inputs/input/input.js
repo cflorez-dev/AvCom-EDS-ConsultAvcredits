@@ -359,7 +359,7 @@ export const Input = ({
             aria-label=${showPasswordToggle && type === 'password' ? (showPassword ? 'Hide password' : 'Show password') : 'Suffix icon'}
           >
             <${Icon}
-              icon=${suffixIconName || 'action/view'}
+              icon=${suffixIconName || (showPasswordToggle && type === 'password' ? (showPassword ? 'action/view' : 'action/hide') : 'action/view')}
               size="s"
               customClassName=${`
                 ${actualState === 'disabled' ? '[&_path]:fill-[#C4C8C5]' : actualState === 'readonly' ? '[&_path]:fill-text-normal-secondary' : ''}

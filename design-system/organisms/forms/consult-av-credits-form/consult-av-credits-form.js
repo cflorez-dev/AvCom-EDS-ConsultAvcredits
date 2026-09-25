@@ -10,7 +10,7 @@ import { fetchAEMData } from '/core/scripts/utils/aem-data.js';
 import { getStoredLanguage } from '/core/scripts/services/header/language-country-selector.js';
 import { validateUpgrade, getUpgradesConfig } from '/core/scripts/services/upgrades/upgrades.service.js';
 import { validateBalance } from '../../../../scripts/services/balanceenquiry/balanceenquiry.service.js';
-import { mapValidateResult, buildMmbRedirectUrl, UPGRADE_RESULT } from '/core/scripts/services/upgrades/upgrades-result.js';
+import { mapValidateResult, UPGRADE_RESULT } from '../../../../scripts/services/balanceenquiry/balanceenquiry-result.js';
 import { showLoader, updateLoaderText } from '/core/scripts/services/loader/loader.service.js';
 
 const html = htm.bind(h);
@@ -35,7 +35,7 @@ export const sanitizePin = (value) => String(value ?? '')
 
 export const MODAL_ICONS = {
   [UPGRADE_RESULT.NO_AVAILABILITY]: 'modals/upgrade-no-availability',
-  [UPGRADE_RESULT.NOT_FOUND]: 'modals/upgrade-not-found',
+  [UPGRADE_RESULT.NOT_FOUND]: 'modals/data-not-found',
   [UPGRADE_RESULT.ERROR]: 'modals/upgrade-error',
 };
 
@@ -141,11 +141,11 @@ export const ConsultAvCreditsForm = ({
       setLabels({
         buttonText: getI18nLabel('ConsultAvCreditsForm.buttonText', 'Consultar'),
         avCreditsLabel: getI18nLabel('ConsultAvCreditsForm.labels.avCredits', 'Número de avianca credits'),
-        avCreditsHelper: getI18nLabel('ConsultAvCreditsForm.helper.avCredits', 'Debe tener 16 dígitos sin caracteres especiales. Ejemplo: 7492836452738497'),
+        avCreditsHelper: getI18nLabel('ConsultAvCreditsForm.helper.avCredits', 'Debe tener 16 dígitos sin caracteres especiales. Ejemplo: 7492836452738497.'),
         pinLabel: getI18nLabel('ConsultAvCreditsForm.labels.pin', 'PIN'),
-        pinHelper: getI18nLabel('ConsultAvCreditsForm.helper.pin', 'Debe ser de 6 dígitos. Fue enviado junto con la información del avianca credits'),
-        avCreditsError: getI18nLabel('ConsultAvCreditsForm.error.avCredits', 'Debe tener 16 dígitos sin caracteres especiales. Ejemplo: 7492836452738497'),
-        pinError: getI18nLabel('ConsultAvCreditsForm.error.pin', 'Debe ser de 6 dígitos. Fue enviado junto con la información del avianca credits'),
+        pinHelper: getI18nLabel('ConsultAvCreditsForm.helper.pin', 'Debe ser de 6 dígitos. Fue enviado junto con la información del avianca credits.'),
+        avCreditsError: getI18nLabel('ConsultAvCreditsForm.error.avCredits', 'Completa los 16 dígitos de tu número Avianca Credits.'),
+        pinError: getI18nLabel('ConsultAvCreditsForm.error.pin', 'Completa los 6 dígitos de tu PIN.'),
         loaderLabel: getI18nLabel('ConsultAvCreditsForm.loader.label', 'Cargando...'),
         errorTitle: getI18nLabel('ConsultAvCreditsForm.modalError.title', '¡Ups! Algo salió mal'),
         errorDescription: getI18nLabel('ConsultAvCreditsForm.modalError.description', 'Por favor, intenta de nuevo.'),
@@ -153,8 +153,8 @@ export const ConsultAvCreditsForm = ({
         highDemandTitle: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.title', 'Servicio con alta demanda'),
         highDemandDescription: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.description', 'El ascenso de cabina no está disponible para este vuelo.'),
         highDemandButton: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.buttonText', 'Consultar otra reserva'),
-        notFoundTitle: getI18nLabel('ConsultAvCreditsForm.modalNotFound.title', 'Reserva no encontrada'),
-        notFoundDescription: getI18nLabel('ConsultAvCreditsForm.modalNotFound.description', 'Revisa el código de tu reserva y apellido'),
+        notFoundTitle: getI18nLabel('ConsultAvCreditsForm.modalNotFound.title', 'Los datos que proporcionaste no son válidos'),
+        notFoundDescription: getI18nLabel('ConsultAvCreditsForm.modalNotFound.description', 'Por favor, asegúrate que el número y PIN de tu Avianca credits sea correcto'),
         notFoundButton: getI18nLabel('ConsultAvCreditsForm.modalNotFound.buttonText', 'Reintentar'),
         highDemandImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.NO_AVAILABILITY], ''),
         notFoundImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.NOT_FOUND], ''),
@@ -162,8 +162,8 @@ export const ConsultAvCreditsForm = ({
         highDemandImageAlt: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.imageAlt', ''),
         notFoundImageAlt: getI18nLabel('ConsultAvCreditsForm.modalNotFound.imageAlt', ''),
         errorImageAlt: getI18nLabel('ConsultAvCreditsForm.modalError.imageAlt', ''),
-        notFoundPnrError: getI18nLabel('ConsultAvCreditsForm.error.pnrNotFound', 'Revisa el código de tu reserva'),
-        notFoundLastNameError: getI18nLabel('ConsultAvCreditsForm.error.apellidoNotFound', 'Revisa el apellido'),
+        notFoundAvCredits: getI18nLabel('ConsultAvCreditsForm.error.pnrNotFound', 'Revisa los 16 dígitos de tu número Avianca Credits.'),
+        notFoundPin: getI18nLabel('ConsultAvCreditsForm.error.apellidoNotFound', 'Revisa los 6 dígitos de tu PIN.'),
         formAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.form', 'Formulario de upgrade de cabina'),
         submitAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.submitButton', 'Solicitar ascenso a Business Class'),
       });
@@ -204,6 +204,10 @@ export const ConsultAvCreditsForm = ({
     if (errors.pin && sanitized.length > 0) {
       setErrors((prev) => ({ ...prev, pin: '' }));
     }
+  };
+
+  const handlePreventCopyPaste = (e) => {
+    e.preventDefault();
   };
 
   const closeModal = () => setActiveModal(null);
@@ -265,16 +269,19 @@ export const ConsultAvCreditsForm = ({
     setUseFallbackLoader(!hasCmsLoader);
 
     try {
-      // Si el servicio esperaba estrictamente "pnr" como llave en el JSON, la enviamos así,
-      // pero usando nuestra nueva variable local numberAvCredits.
+      // Llamado al servicio usando las variables
       const response = await validateBalance({ numberAvCredits, pin });
       
-      if (response.body['response-balanceenquiry'].cards[0]['response-code'] === '1120') {
+      // Enviamos TODO el objeto response a nuestra nueva función
+      const result = mapValidateResult(response); 
+      
+      // Si todo fue correcto
+      if (result === UPGRADE_RESULT.ELIGIBLE) {
         const cardData = response.body['response-balanceenquiry'].cards[0];
         
         const mappedData = {
           currentBalance: formatCurrency(cardData.balance, cardData['currency-code']),
-          holderName: `${cardData.holder['first-name']} ${cardData.holder['last-name']}`,
+          holderName: `${cardData.holder['first-name'] || ''} ${cardData.holder['last-name'] || ''}`.trim(),
           avCreditsNumber: numberAvCredits.slice(-4),
           typeRefund: cardData['card-type'],
           statusAvCredits: cardData['card-status'],
@@ -283,44 +290,27 @@ export const ConsultAvCreditsForm = ({
           openingBalance: formatCurrency(cardData['activation-amount'], cardData['currency-code'])
         };
 
-        window.dispatchEvent(new CustomEvent('avcredits-data-ready', {
-          detail: mappedData
-        }));
+        // Disparamos evento para mostrar el banner
+        window.dispatchEvent(new CustomEvent('avcredits-data-ready', { detail: mappedData }));
         
-        // Detener loader si es el fin del flujo
         showLoader(false);
         setIsSubmitting(false);
         return;
       }
 
-      // Resto de la lógica antigua (eligibles, redirect) si aplica...
-      // NOTA: Como la lógica de "result" estaba comentada en tu original, 
-      // asumo que manejarás UPGRADE_RESULT.ELIGIBLE si este formulario 
-      // aún comparte flujos con upgrades.
-      const result = mapValidateResult({ ...response, lastName: pin }); // Adaptado si es necesario
-      
-      if (result === UPGRADE_RESULT.ELIGIBLE) {
-        const { mmbUrl, langMap, urlByLang } = await getUpgradesConfig();
-        const url = buildMmbRedirectUrl({
-          baseUrl: mmbUrl,
-          lang: getStoredLanguage() || 'es',
-          langMap,
-          urlByLang,
-          pnr: sanitizeAvCredits(numberAvCredits),
-          lastName: pin.trim(),
-        });
-        await onSubmit({ numberAvCredits, pin, result: response.body });
-        window.location.assign(url);
-        return;
-      }
-
+      // Si nuestra nueva función detectó el 10086 o el 10004
       if (result === UPGRADE_RESULT.NOT_FOUND) {
-        setErrors({ numberAvCredits: labels.notFoundPnrError, pin: labels.notFoundLastNameError });
+        setErrors({ 
+          numberAvCredits: labels.notFoundAvCredits, 
+          pin: labels.notFoundPin
+        });
       }
       
+      // Mostramos el modal correspondiente y ocultamos loader
       showLoader(false);
       setActiveModal(result);
       onError({ result, response });
+
     } catch (error) {
       console.error('[consult-av-credits-form] validate failed:', error);
       showLoader(false);
@@ -353,7 +343,9 @@ export const ConsultAvCreditsForm = ({
               value=${numberAvCredits}
               onChange=${handleAvCreditsChange}
               onKeyPress=${(e) => handleNumberKeyPress(e, 16, numberAvCredits)}
-              required=${false}
+              onCopy=${handlePreventCopyPaste}
+              onPaste=${handlePreventCopyPaste}
+              required=${true}
               maxlength="16"
               minlength="16"
               state=${errors.numberAvCredits ? 'error' : 'normal'}
@@ -375,7 +367,9 @@ export const ConsultAvCreditsForm = ({
               value=${pin}
               onChange=${handlePinChange}
               onKeyPress=${(e) => handleNumberKeyPress(e, 6, pin)}
-              required=${false}
+              onCopy=${handlePreventCopyPaste}
+              onPaste=${handlePreventCopyPaste}
+              required=${true}
               maxlength="6"
               minlength="6"
               state=${errors.pin ? 'error' : 'normal'}
