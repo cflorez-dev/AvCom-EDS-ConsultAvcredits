@@ -9,18 +9,6 @@ const html = htm.bind(h);
 // ============================================================================
 // Module-level SVG cache
 // ----------------------------------------------------------------------------
-// Each <Icon> used to fetch `/icons/<name>.svg` inside a useEffect on every
-// mount and render an empty placeholder until the request resolved. Because the
-// booking-box step modals (city / date / passenger selectors) mount their
-// header back/close icons and field icons fresh on every open, the user saw a
-// perceptible icon "load delay" each time (bugs #2 / #11).
-//
-// We cache the RAW svg text once per icon name at module scope so that:
-//   • the first component to need an icon fetches it (or uses a preload),
-//   • every subsequent render reads it synchronously and paints the real icon
-//     on the FIRST frame — no placeholder flash, no refetch.
-// The (cheap) string post-processing is done per render since it depends on the
-// `color` prop; only the network round-trip is shared.
 const rawSvgCache = new Map(); // name -> raw svg text
 const failedIcons = new Set(); // names that 404'd (avoid refetch loops)
 const inFlight = new Map(); // name -> Promise (dedupe concurrent fetches)
@@ -30,9 +18,18 @@ const fetchRawSvg = (name) => {
   if (failedIcons.has(name)) return Promise.reject(new Error('icon failed'));
   if (inFlight.has(name)) return inFlight.get(name);
 
-  const p = fetch(`/core/icons/${name}.svg`)
+  // Intenta primero en la raíz del proyecto
+  const p = fetch(`/icons/${name}.svg`)
     .then((response) => {
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        // Si falla en la raíz, intenta en /core
+        return fetch(`/core/icons/${name}.svg`).then((coreResponse) => {
+          if (!coreResponse.ok) {
+             throw new Error(`HTTP ${coreResponse.status}`);
+          }
+          return coreResponse.text();
+        });
+      }
       return response.text();
     })
     .then((text) => {
@@ -151,7 +148,7 @@ export const Icon = ({
       .catch(() => {
         if (mounted) {
           // eslint-disable-next-line no-console
-          console.warn(`Icon "${icon}" no encontrado en /icons/${icon}.svg`);
+          console.warn(`Icon "${icon}" no encontrado ni en /icons/ ni en /core/icons/`);
           setError(true);
         }
       });

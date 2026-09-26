@@ -30,24 +30,24 @@ function getI18nLabel(key, fallback = '') {
 const StatusIcon = ({ estado }) => {
   const statusLower = estado?.toLowerCase() || '';
   
-  if (statusLower.includes('activo')) {
-    return html`
-      <svg class="w-4 h-4 text-alert-success-icon-bg" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+  if (statusLower.includes('activated')) {
+    return html`  
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 1.5C13.14 1.5 16.5 4.86 16.5 9C16.5 13.14 13.14 16.5 9 16.5C4.86 16.5 1.5 13.14 1.5 9C1.5 4.86 4.86 1.5 9 1.5ZM7.96875 10.1624L5.8689 8.0625L4.875 9.0564L7.96875 12.1501L13.125 6.9939L12.1311 6L7.96875 10.1624Z" fill="#1EA93C"/>
       </svg>
     `;
   }
-  if (statusLower.includes('cancelado')) {
+  if (statusLower.includes('canceled')) {
     return html`
-      <svg class="w-4 h-4 text-alert-error-icon-bg" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.14 16.5 16.5 13.14 16.5 9C16.5 4.86 13.14 1.5 9 1.5ZM11.1213 12.182L9 10.0607L6.87868 12.182L5.81802 11.1213L7.93934 9L5.81802 6.87868L6.87868 5.81802L9 7.93934L11.1213 5.81802L12.182 6.87868L10.0607 9L12.182 11.1213L11.1213 12.182Z" fill="#FF1C46"/>
       </svg>
     `;
   }
   return html`
-    <svg class="w-4 h-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-    </svg>
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.14 16.5 16.5 13.14 16.5 9C16.5 4.86 13.14 1.5 9 1.5ZM11.1213 12.182L9 10.0607L6.87868 12.182L5.81802 11.1213L7.93934 9L5.81802 6.87868L6.87868 5.81802L9 7.93934L11.1213 5.81802L12.182 6.87868L10.0607 9L12.182 11.1213L11.1213 12.182Z" fill="#5A5A5A"/>
+      </svg>
   `;
 };
 

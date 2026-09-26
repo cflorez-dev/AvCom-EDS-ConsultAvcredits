@@ -43,31 +43,33 @@ const withTimeout = (run, ms) => {
 };
 
 export const validateBalance = async ({ numberAvCredits, pin }, retries = { auth: 0, server: 0 }) => {
-  const res = await withTimeout(async (signal) => {
-    const [digital, upgrades, encryptedVoucher, encryptedPin] = await Promise.all([
-      getApimCredentials('digital'),
-      getApimCredentials('upgrades'),
-      encryptPGP(numberAvCredits),
-      encryptPGP(pin)
-    ]);
+    const res = await withTimeout(async (signal) => {
+        const [digital, upgrades, encryptedVoucher, encryptedPin] = await Promise.all([
+        getApimCredentials('digital'),
+        getApimCredentials('upgrades'),
+        encryptPGP(numberAvCredits),
+        encryptPGP(pin)
+        ]);
 
-    return fetch(`https://api-payments-qa.avtest.ink/api_qwikcilver_in/balanceenquiry`, {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImRndlNEdks4QTVLeUt5cHB3MWRBd1RYRDNDQSIsImtpZCI6ImRndlNEdks4QTVLeUt5cHB3MWRBd1RYRDNDQSJ9.eyJhdWQiOiJodHRwczovL2F2dGVzdG9ubGluZS5vbm1pY3Jvc29mdC5jb20vNmUxMzVjYjQtZmY2Zi00MjY3LWE1YjEtYTY2NWQ2MjA3MmNmIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvMzk3ZWQwMzEtMzkzNS00MGIwLTljNjktMTRmZDExNjRkYjhmLyIsImlhdCI6MTc5MDE3ODkxNiwibmJmIjoxNzkwMTc4OTE2LCJleHAiOjE3OTAxODI4MTYsImFpbyI6IkFTUUEyLzhlQUFBQW1lOFN5b0JMTEpzWi9xbkZxdjgyMEJrQmlraTZmNlhuWEpON3VOeXltV1k9IiwiYXBwaWQiOiI2ZTEzNWNiNC1mZjZmLTQyNjctYTViMS1hNjY1ZDYyMDcyY2YiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zOTdlZDAzMS0zOTM1LTQwYjAtOWM2OS0xNGZkMTE2NGRiOGYvIiwib2lkIjoiYTRiMDBiMTktYWM5MC00N2M2LWE4NTktMTgxYzQ0NDJjNzI0IiwicmgiOiIxLkFTa0FNZEItT1RVNXNFQ2NhUlQ5RVdUYmo3UmNFMjV2XzJkQ3BiR21aZFlnY3M4QUFBQXBBQS4iLCJzdWIiOiJhNGIwMGIxOS1hYzkwLTQ3YzYtYTg1OS0xODFjNDQ0MmM3MjQiLCJ0aWQiOiIzOTdlZDAzMS0zOTM1LTQwYjAtOWM2OS0xNGZkMTE2NGRiOGYiLCJ1dGkiOiJwSm1LNEUwZGhVNkpaRTJKeVZTVEFBIiwidmVyIjoiMS4wIiwieG1zX2Z0ZCI6IlVSM3RYdWw3dDktZ2JCZFdiUUZNVWlLbEVWdDE2b1FQS0QxTGJUaldvM3dCZFhOM1pYTjBNeTFrYzIxeiJ9.aOQpZZTxSRTfiBTl2s8pVgeKvbmuhOdwpaib1_yAh6RkB2JZC63eN3RBuXRDBrX4bdS8CRsDnalzGNJvMlQGUhcqU7BKE7o099nBPdmf--4KnnshsUX3yEpAsEtS90yDtiWof6erZ64SlZIxI37mcbYtkDD1gq25GcfSANZ6OHene3BDivE_tqsENpPhDCIi6ZND9tTVXtpFjyU__1z3WbSB_rUfJmpGqMZg3cnBCvjgPJQNFDrGpTE1dM4KKekE5VhU9ak54zHbcfnTerci5auEU7MsTGpLeN1ScdcczidbrjcbBSDGc-aF3LKLe9ILJaFfcF2tGgWR1WXGGKF3bA',
-            'Ocp-Apim-Subscription-Key': 'f80b16f56a3b4a4da66eb649178bbe9e'
-         },
-        body: JSON.stringify({
-            "balance-enquiry": {
-                "channel": "AVCOM",
-                "voucher": encryptedVoucher,
-                "pin": encryptedPin
-            }
-        }),
-        signal,
-    });
-  }, VALIDATE_TIMEOUT_MS);
+        const fetchUrl = 'https://api-payments-qa.avtest.ink/api_qwikcilver_in/balanceenquiry';
+
+        return fetch(fetchUrl, {
+            method: 'POST',
+            headers: {
+                'Ocp-Apim-Subscription-Key': 'f80b16f56a3b4a4da66eb649178bbe9e',
+                Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImRndlNEdks4QTVLeUt5cHB3MWRBd1RYRDNDQSIsImtpZCI6ImRndlNEdks4QTVLeUt5cHB3MWRBd1RYRDNDQSJ9.eyJhdWQiOiJodHRwczovL2F2dGVzdG9ubGluZS5vbm1pY3Jvc29mdC5jb20vNmUxMzVjYjQtZmY2Zi00MjY3LWE1YjEtYTY2NWQ2MjA3MmNmIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvMzk3ZWQwMzEtMzkzNS00MGIwLTljNjktMTRmZDExNjRkYjhmLyIsImlhdCI6MTc5MDM1NDU0NiwibmJmIjoxNzkwMzU0NTQ2LCJleHAiOjE3OTAzNTg0NDYsImFpbyI6IkFTUUEyLzhlQUFBQWEvbzducDVkWVNoc3RpaURrZzNvdEpLQmtwM2RhaUxBNGs1MjY5ZkdqQ2c9IiwiYXBwaWQiOiI2ZTEzNWNiNC1mZjZmLTQyNjctYTViMS1hNjY1ZDYyMDcyY2YiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zOTdlZDAzMS0zOTM1LTQwYjAtOWM2OS0xNGZkMTE2NGRiOGYvIiwib2lkIjoiYTRiMDBiMTktYWM5MC00N2M2LWE4NTktMTgxYzQ0NDJjNzI0IiwicmgiOiIxLkFTa0FNZEItT1RVNXNFQ2NhUlQ5RVdUYmo3UmNFMjV2XzJkQ3BiR21aZFlnY3M4QUFBQXBBQS4iLCJzdWIiOiJhNGIwMGIxOS1hYzkwLTQ3YzYtYTg1OS0xODFjNDQ0MmM3MjQiLCJ0aWQiOiIzOTdlZDAzMS0zOTM1LTQwYjAtOWM2OS0xNGZkMTE2NGRiOGYiLCJ1dGkiOiJHcDFULTNuVGswZVc4RThNSXpvZkFBIiwidmVyIjoiMS4wIiwieG1zX2Z0ZCI6IjRTeWJPT1FaNjQzNEdlQnU0aGVmUkI1SDRkWU92Y2NDRllHUTlrbGZaTXdCZFhObFlYTjBMV1J6YlhNIn0.NOWdVkHrhVasKtuPC3uH42QtY03A5wbyWgYvwcouv3h43lg8glB3SBXxLUohg1uQr5V5pJ4HHn6Neyivz2hCyqGfY90_UMy8yuagxq9pSSnheZKWNDrB6JA53MvolP3lFYYZfE6UYrcrdAtH_FocAOJUla7aqHyDUgovi43k7Nf_aV_i1K-9cDHBv7QT_s472QZlhWlHnVb_-MCM_pxr6lFwz6oNOhIGc4GxmLkey4LWDVADqvGTMENgfyZ5H1e0y0M7HIf25ZYS146SDW4jgRP4O93ly8zoZoNp5--23D06VXlLY2YbxdbtQijjP-sidLQWjALJqjQlvM4WCQ53jw',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "balance-enquiry": {
+                    "channel": "AVCOM",
+                    "voucher": encryptedVoucher,
+                    "pin": encryptedPin
+                }
+            }),
+            signal,
+        });
+    }, VALIDATE_TIMEOUT_MS);
 
   if (res.status === 401 && retries.auth < 1) {
     clearApimTokenCache('digital');
