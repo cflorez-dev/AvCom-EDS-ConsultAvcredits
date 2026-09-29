@@ -341,7 +341,7 @@ export default async function decorate(block) {
   }
   const settleTimeout = setTimeout(scheduleAll, 200);
 
-  block.addEventListener('unload', () => {
+  window.addEventListener('pagehide', () => {
     if (rafId) cancelAnimationFrame(rafId);
     clearTimeout(settleTimeout);
     resizeObserver.disconnect();

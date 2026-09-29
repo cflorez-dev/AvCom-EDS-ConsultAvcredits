@@ -8,9 +8,8 @@ import { preloadIcons } from '/core/design-system/atoms/icon/icon.js';
 import { FullPageLoader, CONDOR_LOADER_ASSET } from '/core/design-system/molecules/full-page-loader/full-page-loader.js';
 import { fetchAEMData } from '/core/scripts/utils/aem-data.js';
 import { getStoredLanguage } from '/core/scripts/services/header/language-country-selector.js';
-import { validateUpgrade, getUpgradesConfig } from '/core/scripts/services/upgrades/upgrades.service.js';
 import { validateBalance } from '../../../../scripts/services/balanceenquiry/balanceenquiry.service.js';
-import { mapValidateResult, UPGRADE_RESULT } from '../../../../scripts/services/balanceenquiry/balanceenquiry-result.js';
+import { mapValidateResult, BALANCE_RESULT, resetRetryCount } from '../../../../scripts/services/balanceenquiry/balanceenquiry-result.js';
 import { showLoader, updateLoaderText } from '/core/scripts/services/loader/loader.service.js';
 
 const html = htm.bind(h);
@@ -34,17 +33,21 @@ export const sanitizePin = (value) => String(value ?? '')
   .slice(0, 6);
 
 export const MODAL_ICONS = {
-  [UPGRADE_RESULT.NO_AVAILABILITY]: 'modals/upgrade-no-availability',
-  [UPGRADE_RESULT.NOT_FOUND]: 'modals/data-not-found',
-  [UPGRADE_RESULT.ERROR]: 'modals/upgrade-error',
+  [BALANCE_RESULT.BLOCKED_CARD]: 'modals/blocked-card',
+  [BALANCE_RESULT.MAX_RETRIES]: 'modals/blocked-card',
+  [BALANCE_RESULT.NOT_FOUND]: 'modals/data-not-found',
+  [BALANCE_RESULT.ERROR]: 'modals/error-icon',
+  [BALANCE_RESULT.ERROR_QC]: 'modals/error-icon',
 };
 
 export const MODAL_ICON_FALLBACK = 'modals/upgrade-not-available';
 
 export const MODAL_IMAGE_KEYS = {
-  [UPGRADE_RESULT.NO_AVAILABILITY]: 'ConsultAvCreditsForm.modalHighDemand.image',
-  [UPGRADE_RESULT.NOT_FOUND]: 'ConsultAvCreditsForm.modalNotFound.image',
-  [UPGRADE_RESULT.ERROR]: 'ConsultAvCreditsForm.modalError.image',
+  [BALANCE_RESULT.BLOCKED_CARD]: 'ConsultAvCreditsForm.modalBlockedCard.image',
+  [BALANCE_RESULT.MAX_RETRIES]: 'ConsultAvCreditsForm.modalMaxRetries.image',
+  [BALANCE_RESULT.NOT_FOUND]: 'ConsultAvCreditsForm.modalNotFound.image',
+  [BALANCE_RESULT.ERROR]: 'ConsultAvCreditsForm.modalError.image',
+  [BALANCE_RESULT.ERROR_QC]: 'ConsultAvCreditsForm.modalErrorQc.image',
 };
 
 export const resolveModalIcon = (result, cmsValue, overrideSrc) => {
@@ -58,9 +61,11 @@ export const resolveModalIcon = (result, cmsValue, overrideSrc) => {
 export const collectModalIllustrations = (labels, overrideSrc) => {
   const l = labels || {};
   const resueltas = [
-    resolveModalIcon(UPGRADE_RESULT.NO_AVAILABILITY, l.highDemandImage, overrideSrc),
-    resolveModalIcon(UPGRADE_RESULT.NOT_FOUND, l.notFoundImage, overrideSrc),
-    resolveModalIcon(UPGRADE_RESULT.ERROR, l.errorImage, overrideSrc),
+    resolveModalIcon(BALANCE_RESULT.BLOCKED_CARD, l.blockedCardImage, overrideSrc),
+    resolveModalIcon(BALANCE_RESULT.MAX_RETRIES, l.maxRetriesImage, overrideSrc),
+    resolveModalIcon(BALANCE_RESULT.NOT_FOUND, l.notFoundImage, overrideSrc),
+    resolveModalIcon(BALANCE_RESULT.ERROR, l.errorImage, overrideSrc),
+    resolveModalIcon(BALANCE_RESULT.ERROR_QC, l.errorQcImage, overrideSrc),
   ].filter((v) => typeof v === 'string' && v.trim());
   const unicas = [...new Set(resueltas)];
   return {
@@ -147,30 +152,42 @@ export const ConsultAvCreditsForm = ({
         avCreditsError: getI18nLabel('ConsultAvCreditsForm.error.avCredits', 'Completa los 16 dígitos de tu número Avianca Credits.'),
         pinError: getI18nLabel('ConsultAvCreditsForm.error.pin', 'Completa los 6 dígitos de tu PIN.'),
         loaderLabel: getI18nLabel('ConsultAvCreditsForm.loader.label', 'Cargando...'),
-        errorTitle: getI18nLabel('ConsultAvCreditsForm.modalError.title', '¡Ups! Algo salió mal'),
-        errorDescription: getI18nLabel('ConsultAvCreditsForm.modalError.description', 'Por favor, intenta de nuevo.'),
-        errorButton: getI18nLabel('ConsultAvCreditsForm.modalError.buttonText', 'Reintentar'),
-        highDemandTitle: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.title', 'Servicio con alta demanda'),
-        highDemandDescription: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.description', 'El ascenso de cabina no está disponible para este vuelo.'),
-        highDemandButton: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.buttonText', 'Consultar otra reserva'),
+        errorTitle: getI18nLabel('ConsultAvCreditsForm.modalError.title', '¡Ups! algo salió mal'),
+        errorDescription: getI18nLabel('ConsultAvCreditsForm.modalError.description', 'Por favor, intenta de nuevo más tarde'),
+        errorButton: getI18nLabel('ConsultAvCreditsForm.modalError.buttonText', 'Cerrar'),
+        errorQcTitle: getI18nLabel('ConsultAvCreditsForm.modalErrorQc.title', '¡Ups! algo salió mal en nuestro sistema'),
+        errorQcDescription: getI18nLabel('ConsultAvCreditsForm.modalErrorQc.description', 'Por favor, intenta de nuevo más tarde'),
+        errorQcButton: getI18nLabel('ConsultAvCreditsForm.modalErrorQc.buttonText', 'Cerrar'),
+        blockedCardTitle: getI18nLabel('ConsultAvCreditsForm.modalBlockedCard.title', 'Tu avianca credits está bloqueado'),
+        blockedCardDescription: getI18nLabel('ConsultAvCreditsForm.modalBlockedCard.description', 'Comunícate con nuestro contact center para recibir soporte adicional'),
+        blockedCardButton: getI18nLabel('ConsultAvCreditsForm.modalBlockedCard.buttonText', 'Cerrar'),
+        maxRetriesTitle: getI18nLabel('ConsultAvCreditsForm.modalMaxRetries.title', 'Tu avianca credits ha sido bloqueado'),
+        maxRetriesDescription: getI18nLabel('ConsultAvCreditsForm.modalMaxRetries.description', 'Comunícate con nuestro contact center para recibir soporte adicional'),
+        maxRetriesButton: getI18nLabel('ConsultAvCreditsForm.modalMaxRetries.buttonText', 'Cerrar'),
         notFoundTitle: getI18nLabel('ConsultAvCreditsForm.modalNotFound.title', 'Los datos que proporcionaste no son válidos'),
         notFoundDescription: getI18nLabel('ConsultAvCreditsForm.modalNotFound.description', 'Por favor, asegúrate que el número y PIN de tu Avianca credits sea correcto'),
         notFoundButton: getI18nLabel('ConsultAvCreditsForm.modalNotFound.buttonText', 'Reintentar'),
-        highDemandImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.NO_AVAILABILITY], ''),
-        notFoundImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.NOT_FOUND], ''),
-        errorImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.ERROR], ''),
-        highDemandImageAlt: getI18nLabel('ConsultAvCreditsForm.modalHighDemand.imageAlt', ''),
+        blockedCardImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.BLOCKED_CARD], ''),
+        maxRetriesImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.MAX_RETRIES], ''),
+        notFoundImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.NOT_FOUND], ''),
+        errorImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.ERROR], ''),
+        errorQcImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.ERROR_QC], ''),
+        blockedCardImageAlt: getI18nLabel('ConsultAvCreditsForm.modalBlockedCard.imageAlt', ''),
+        maxRetriesImageAlt: getI18nLabel('ConsultAvCreditsForm.modalMaxRetries.imageAlt', ''),
         notFoundImageAlt: getI18nLabel('ConsultAvCreditsForm.modalNotFound.imageAlt', ''),
         errorImageAlt: getI18nLabel('ConsultAvCreditsForm.modalError.imageAlt', ''),
+        errorQcImageAlt: getI18nLabel('ConsultAvCreditsForm.modalErrorQc.imageAlt', ''),
         notFoundAvCredits: getI18nLabel('ConsultAvCreditsForm.error.pnrNotFound', 'Revisa los 16 dígitos de tu número Avianca Credits.'),
         notFoundPin: getI18nLabel('ConsultAvCreditsForm.error.apellidoNotFound', 'Revisa los 6 dígitos de tu PIN.'),
         formAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.form', 'Formulario de upgrade de cabina'),
         submitAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.submitButton', 'Solicitar ascenso a Business Class'),
       });
       warmModalIllustrations(collectModalIllustrations({
-        highDemandImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.NO_AVAILABILITY], ''),
-        notFoundImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.NOT_FOUND], ''),
-        errorImage: getI18nLabel(MODAL_IMAGE_KEYS[UPGRADE_RESULT.ERROR], ''),
+        blockedCardImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.BLOCKED_CARD], ''),
+        maxRetriesImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.MAX_RETRIES], ''),
+        notFoundImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.NOT_FOUND], ''),
+        errorImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.ERROR], ''),
+        errorQcImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.ERROR_QC], ''),
       }, modalImageData?.src));
     };
     loadLabels();
@@ -212,10 +229,15 @@ export const ConsultAvCreditsForm = ({
 
   const closeModal = () => setActiveModal(null);
 
-  const handleHighDemandClose = () => {
+  const handleClearInputsClose = () => {
+    if (activeModal === BALANCE_RESULT.MAX_RETRIES) {
+      resetRetryCount();
+    }
+
     setActiveModal(null);
     setNumberAvCredits('');
     setPin('');
+    document.getElementById('number-av-credits')?.focus();
   };
 
   const handleNotFoundClose = () => {
@@ -261,6 +283,10 @@ export const ConsultAvCreditsForm = ({
       return;
     }
 
+    if (errors.numberAvCredits || errors.pin) {
+      return; 
+    }
+
     setIsSubmitting(true);
     const hasCmsLoader = showLoader(true);
     if (hasCmsLoader && typeof labels.loaderLabel === 'string') {
@@ -276,7 +302,7 @@ export const ConsultAvCreditsForm = ({
       const result = mapValidateResult(response); 
       
       // Si todo fue correcto
-      if (result === UPGRADE_RESULT.ELIGIBLE) {
+      if (result === BALANCE_RESULT.ELIGIBLE) {
         const cardData = response.body['response-balanceenquiry'].cards[0];
         
         const mappedData = {
@@ -299,7 +325,7 @@ export const ConsultAvCreditsForm = ({
       }
 
       // Si nuestra nueva función detectó el 10086 o el 10004
-      if (result === UPGRADE_RESULT.NOT_FOUND) {
+      if (result === BALANCE_RESULT.NOT_FOUND) {
         setErrors({ 
           numberAvCredits: labels.notFoundAvCredits, 
           pin: labels.notFoundPin
@@ -314,8 +340,8 @@ export const ConsultAvCreditsForm = ({
     } catch (error) {
       console.error('[consult-av-credits-form] validate failed:', error);
       showLoader(false);
-      setActiveModal(UPGRADE_RESULT.ERROR);
-      onError({ result: UPGRADE_RESULT.ERROR, error });
+      setActiveModal(BALANCE_RESULT.ERROR);
+      onError({ result: BALANCE_RESULT.ERROR, error });
     }
     setIsSubmitting(false);
   };
@@ -401,35 +427,57 @@ export const ConsultAvCreditsForm = ({
     <${FullPageLoader} isOpen=${isSubmitting && useFallbackLoader} label=${labels.loaderLabel} />
 
     <${ModalAviancaLayout}
-      isOpen=${activeModal === UPGRADE_RESULT.NO_AVAILABILITY}
-      onClose=${handleHighDemandClose}
-      title=${labels.highDemandTitle}
-      description=${modalDescription || labels.highDemandDescription}
-      icon=${resolveModalIcon(UPGRADE_RESULT.NO_AVAILABILITY, labels.highDemandImage, modalIconOverride)}
-      imageAlt=${labels.highDemandImageAlt || modalImageAlt}
-      primaryButtonLabel=${labels.highDemandButton}
-      onPrimaryClick=${handleHighDemandClose}
+      isOpen=${activeModal === BALANCE_RESULT.BLOCKED_CARD}
+      onClose=${handleClearInputsClose}
+      title=${labels.blockedCardTitle}
+      description=${modalDescription || labels.blockedCardDescription}
+      icon=${resolveModalIcon(BALANCE_RESULT.BLOCKED_CARD, labels.blockedCardImage, modalIconOverride)}
+      imageAlt=${labels.blockedCardImageAlt || modalImageAlt}
+      primaryButtonLabel=${labels.blockedCardButton}
+      onPrimaryClick=${handleClearInputsClose}
     />
 
     <${ModalAviancaLayout}
-      isOpen=${activeModal === UPGRADE_RESULT.NOT_FOUND}
+      isOpen=${activeModal === BALANCE_RESULT.MAX_RETRIES}
+      onClose=${handleClearInputsClose}
+      title=${labels.maxRetriesTitle}
+      description=${modalDescription || labels.maxRetriesDescription}
+      icon=${resolveModalIcon(BALANCE_RESULT.MAX_RETRIES, labels.maxRetriesImage, modalIconOverride)}
+      imageAlt=${labels.maxRetriesImageAlt || modalImageAlt}
+      primaryButtonLabel=${labels.maxRetriesButton}
+      onPrimaryClick=${handleClearInputsClose}
+    />
+
+    <${ModalAviancaLayout}
+      isOpen=${activeModal === BALANCE_RESULT.NOT_FOUND}
       onClose=${handleNotFoundClose}
       title=${labels.notFoundTitle}
       description=${labels.notFoundDescription}
-      icon=${resolveModalIcon(UPGRADE_RESULT.NOT_FOUND, labels.notFoundImage, modalIconOverride)}
+      icon=${resolveModalIcon(BALANCE_RESULT.NOT_FOUND, labels.notFoundImage, modalIconOverride)}
       imageAlt=${labels.notFoundImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.notFoundButton}
       onPrimaryClick=${handleNotFoundClose}
     />
 
     <${ModalAviancaLayout}
-      isOpen=${activeModal === UPGRADE_RESULT.ERROR}
+      isOpen=${activeModal === BALANCE_RESULT.ERROR}
       onClose=${closeModal}
       title=${labels.errorTitle}
       description=${labels.errorDescription}
-      icon=${resolveModalIcon(UPGRADE_RESULT.ERROR, labels.errorImage, modalIconOverride)}
+      icon=${resolveModalIcon(BALANCE_RESULT.ERROR, labels.errorImage, modalIconOverride)}
       imageAlt=${labels.errorImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorButton}
+      onPrimaryClick=${closeModal}
+    />
+
+    <${ModalAviancaLayout}
+      isOpen=${activeModal === BALANCE_RESULT.ERROR_QC}
+      onClose=${closeModal}
+      title=${labels.errorQcTitle}
+      description=${labels.errorQcDescription}
+      icon=${resolveModalIcon(BALANCE_RESULT.ERROR_QC, labels.errorQcImage, modalIconOverride)}
+      imageAlt=${labels.errorQcImageAlt || modalImageAlt}
+      primaryButtonLabel=${labels.errorQcButton}
       onPrimaryClick=${closeModal}
     />
   `;

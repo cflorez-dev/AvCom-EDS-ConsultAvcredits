@@ -70,7 +70,7 @@ async function loadAdobeLaunch() {
  * load fonts.css and set a session storage flag
  */
 async function loadFonts() {
-  await loadCSS(`${window.hlx.codeBasePath}/core/styles/fonts.css`);
+  await loadCSS(`${window.hlx.codeBasePath}/styles/fonts.css`);
   try {
     if (!window.location.hostname.includes('localhost')) sessionStorage.setItem('fonts-loaded', 'true');
   } catch (e) {
@@ -864,7 +864,7 @@ async function loadEager(doc) {
   try {
     const preload = document.createElement('link');
     preload.rel = 'preload';
-    preload.href = `${window.hlx?.codeBasePath || ''}/core/fonts/RedHatDisplay-VariableFont_wght.ttf`;
+    preload.href = `${window.hlx?.codeBasePath || ''}/fonts/RedHatDisplay-VariableFont_wght.ttf`;
     preload.as = 'font';
     preload.type = 'font/ttf';
     preload.crossOrigin = '';
@@ -1091,8 +1091,8 @@ async function loadLazy(doc) {
     // prevents the title/rich-text reflow that occurs when the grid columns
     // apply only after the section is already visible (large CLS).
     await Promise.all([
-      loadCSS(`${window.hlx.codeBasePath}/core/styles/sections.css`),
-      loadCSS(`${window.hlx.codeBasePath}/core/styles/grid-layout.css`),
+      loadCSS(`${window.hlx.codeBasePath}/styles/sections.css`),
+      loadCSS(`${window.hlx.codeBasePath}/styles/grid-layout.css`),
     ]);
 
     // Keep curtain active until visible content is ready.
@@ -1160,12 +1160,12 @@ async function loadLazy(doc) {
     console.warn('[scripts] Darksite chrome failed (fail-open):', error);
   }
 
-  /* if (!darksiteChromeLoaded) {
+  if (!darksiteChromeLoaded) {
     await Promise.all([
       headerElement ? loadHeader(headerElement) : Promise.resolve(),
       loadFooter(doc.querySelector('footer')),
     ]);
-  } */
+  }
 
   // If header exists, wait for header-template-ready event to ensure header structure is ready
   // This ensures the header containers exist and child blocks have rendered
@@ -1228,10 +1228,10 @@ async function loadLazy(doc) {
 
   // Non-critical global CSS (moved from head.html to avoid render-blocking).
   // sections.css is awaited at the top of loadLazy (preloaded in head.html).
-  loadCSS(`${window.hlx.codeBasePath}/core/styles/components/component.css`);
-  loadCSS(`${window.hlx.codeBasePath}/core/styles/components/custom-scrollbar.css`);
-  loadCSS(`${window.hlx.codeBasePath}/core/styles/migration-cards.css`);
-  loadCSS(`${window.hlx.codeBasePath}/core/styles/utilities.css`);
+  loadCSS(`${window.hlx.codeBasePath}/styles/components/component.css`);
+  loadCSS(`${window.hlx.codeBasePath}/styles/components/custom-scrollbar.css`);
+  loadCSS(`${window.hlx.codeBasePath}/styles/migration-cards.css`);
+  loadCSS(`${window.hlx.codeBasePath}/styles/utilities.css`);
 
   // Show geo POS conflict modal if `resolvePOS()` tagged one during loadEager.
   // Runs post-render so it doesn't block LCP. Also wires the manual-POS-change
@@ -1282,7 +1282,7 @@ async function loadLazy(doc) {
 
   // grid-layout.css is now preloaded in head.html and awaited at the top of
   // loadLazy (before sections become visible) to avoid the title reflow/CLS.
-  loadCSS(`${window.hlx.codeBasePath}/core/styles/lazy-styles.css`);
+  loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();
 }
 
