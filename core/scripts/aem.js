@@ -668,10 +668,10 @@ async function resolveBlockModule(name) {
 async function loadBlockCSS(name) { 
   try { 
     // override del sitio 
-    return await loadCSS(`${window.hlx.codeBasePath}/blocks/${name}/${name}.css`); 
+    return await loadCSS(`/blocks/${name}/${name}.css`); 
   } catch { 
     // fallback al Core 
-    return await loadCSS(`${window.hlx.codeBasePath}/core/blocks/${name}/${name}.css`);
+    return await loadCSS(`${window.hlx.codeBasePath}/blocks/${name}/${name}.css`);
   } 
 }
 

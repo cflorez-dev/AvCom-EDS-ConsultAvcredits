@@ -18,7 +18,7 @@ function buildModulePath(relativePath) {
 }
 
 async function loadLanguageCountrySelectorService() {
-  const servicePath = buildModulePath('/core/scripts/services/header/language-country-selector.js');
+  const servicePath = buildModulePath('/scripts/services/header/language-country-selector.js');
   try {
     return await import(servicePath);
   } catch (error) {
