@@ -299,6 +299,43 @@ async function loadScript(src, attrs) {
   });
 }
 
+
+/**
+ * Detecta el idioma desde la URL actual
+ * Supports both URL patterns:
+ *   - New: /{lang}/ (e.g., /es/, /en/, /pt/)
+ *   - Legacy: /{country}/{lang}/ (e.g., /co/es/, /br/pt/)
+ * Country is resolved from cookie, not URL
+ * @returns {Object|null} Objeto con language y prefix, o null si no se detecta
+ * @example
+ * // URL: /es/page -> {language: 'es', prefix: '/es'}
+ * // URL: /co/es/page -> {language: 'es', prefix: '/es'}
+ * // URL: /page -> null
+ */
+function detectLocale() {
+  const { pathname } = window.location;
+
+  // Try legacy pattern first: /{country}/{lang}/ (e.g., /co/es/)
+  const legacyMatch = pathname.match(/^\/([a-z]{2})\/([a-z]{2})(?:\/|$)/);
+  if (legacyMatch) {
+    return {
+      language: legacyMatch[2],
+      prefix: `/${legacyMatch[2]}`,
+    };
+  }
+
+  // New pattern: /{lang}/ (e.g., /es/)
+  const match = pathname.match(/^\/([a-z]{2})(?:\/|$)/);
+  if (match) {
+    return {
+      language: match[1],
+      prefix: `/${match[1]}`,
+    };
+  }
+
+  return null;
+}
+
 /**
  * Retrieves the content of metadata tags.
  * @param {string} name The metadata name (or property)
@@ -712,6 +749,7 @@ export {
   decorateIcons,
   decorateSections,
   decorateTemplateAndTheme,
+  detectLocale,
   getMetadata,
   loadBlock,
   loadCSS,

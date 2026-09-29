@@ -15,7 +15,7 @@ export async function fetchAEMData(endpoint, options = {}) {
 
   // Build URL - add .json extension if not present
   const cleanEndpoint = endpoint.replace(/^\/+/, '');
-  const url = `${rootPath}/${cleanEndpoint}${cleanEndpoint.endsWith('.json') ? '' : '.json'}`;
+  const url = `${rootPath}/i18/${cleanEndpoint}${cleanEndpoint.endsWith('.json') ? '' : '.json'}`;
 
   // Return cached data if available
   if (useCache && window.aemDataCache[endpoint]) {
