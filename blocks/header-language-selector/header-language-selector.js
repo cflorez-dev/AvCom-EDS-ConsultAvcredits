@@ -1,6 +1,6 @@
 import { h, render } from '@dropins/tools/preact.js';
 import htm from 'htm';
-import { readBlockConfig } from '../../scripts/aem.js';
+import { readBlockConfig } from '../../core/scripts/aem.js';
 import { shouldShowByTargeting } from '../../core/scripts/utils/target-filter.js';
 import { CustomLanguageSearch } from '../../design-system/organisms/lenguage-search/lenguage-search.js';
 
