@@ -1145,6 +1145,27 @@
     ]
   },
   {
+    "id": "cms-loader",
+    "fields": [
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "image",
+        "label": "Loader Image",
+        "value": "",
+        "description": "Image to display in the loader"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "text",
+        "label": "Loader Text",
+        "value": "",
+        "description": "Text message to display below the loader image"
+      }
+    ]
+  },
+  {
     "id": "header-language-selector",
     "fields": [
       {
