@@ -304,7 +304,11 @@ export const ConsultAvCreditsForm = ({
       // Si todo fue correcto
       if (result === BALANCE_RESULT.ELIGIBLE) {
         const cardData = response.body['response-balanceenquiry'].cards[0];
-        
+
+        if (cardData['response-code'] === '1120' && Number(cardData.balance) === 0) {
+          cardData['card-status'] = 'Insufficient_funds'
+        }
+
         const mappedData = {
           currentBalance: formatCurrency(cardData.balance, cardData['currency-code']),
           holderName: `${cardData.holder['first-name'] || ''} ${cardData.holder['last-name'] || ''}`.trim(),

@@ -2,6 +2,12 @@ import { getApimCredentials, clearApimTokenCache } from '/core/scripts/services/
 import { fetchAEMData } from '/core/scripts/utils/aem-data.js';
 import { encryptPGP } from '../encryption/pgp.service.js';
 
+const CHANNEL = 'AVCOM';
+const getEndpointUrl = async () => {
+  const config = await fetchAEMData('environment');
+  return config.environment.data.find((item) => item.Key === 'AV_ENVIRONMENT_API_URL')?.Text ?? '';
+};
+
 /**
  * Límite de tiempo POR INTENTO. Sin él, un backend que no responde deja el
  * FullPageLoader a pantalla completa indefinidamente: no tiene botón de cierre, ni
@@ -43,37 +49,32 @@ const withTimeout = (run, ms) => {
 };
 
 export const validateBalance = async ({ numberAvCredits, pin }, retries = { auth: 0, server: 0 }) => {
-    const res = await withTimeout(async (signal) => {
-        const [digital, upgrades, encryptedVoucher, encryptedPin] = await Promise.all([
-        getApimCredentials('digital'),
-        getApimCredentials('upgrades'),
-        encryptPGP(numberAvCredits),
-        encryptPGP(pin)
-        ]);
+  const res = await withTimeout(async (signal) => {
+    const endPoint = await getEndpointUrl();
+    const [encryptedVoucher, encryptedPin] = await Promise.all([
+    encryptPGP(numberAvCredits),
+    encryptPGP(pin)
+    ]);
 
-        const fetchUrl = 'https://api-payments-qa.avtest.ink/api_qwikcilver_in/balanceenquiry';
+    const fetchUrl = `${endPoint}/balanceEnquiry`;
 
-        return fetch(fetchUrl, {
-            method: 'POST',
-            headers: {
-                'Ocp-Apim-Subscription-Key': 'f80b16f56a3b4a4da66eb649178bbe9e',
-                Authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImRndlNEdks4QTVLeUt5cHB3MWRBd1RYRDNDQSIsImtpZCI6ImRndlNEdks4QTVLeUt5cHB3MWRBd1RYRDNDQSJ9.eyJhdWQiOiJodHRwczovL2F2dGVzdG9ubGluZS5vbm1pY3Jvc29mdC5jb20vNmUxMzVjYjQtZmY2Zi00MjY3LWE1YjEtYTY2NWQ2MjA3MmNmIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvMzk3ZWQwMzEtMzkzNS00MGIwLTljNjktMTRmZDExNjRkYjhmLyIsImlhdCI6MTc5MDM1NDU0NiwibmJmIjoxNzkwMzU0NTQ2LCJleHAiOjE3OTAzNTg0NDYsImFpbyI6IkFTUUEyLzhlQUFBQWEvbzducDVkWVNoc3RpaURrZzNvdEpLQmtwM2RhaUxBNGs1MjY5ZkdqQ2c9IiwiYXBwaWQiOiI2ZTEzNWNiNC1mZjZmLTQyNjctYTViMS1hNjY1ZDYyMDcyY2YiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC8zOTdlZDAzMS0zOTM1LTQwYjAtOWM2OS0xNGZkMTE2NGRiOGYvIiwib2lkIjoiYTRiMDBiMTktYWM5MC00N2M2LWE4NTktMTgxYzQ0NDJjNzI0IiwicmgiOiIxLkFTa0FNZEItT1RVNXNFQ2NhUlQ5RVdUYmo3UmNFMjV2XzJkQ3BiR21aZFlnY3M4QUFBQXBBQS4iLCJzdWIiOiJhNGIwMGIxOS1hYzkwLTQ3YzYtYTg1OS0xODFjNDQ0MmM3MjQiLCJ0aWQiOiIzOTdlZDAzMS0zOTM1LTQwYjAtOWM2OS0xNGZkMTE2NGRiOGYiLCJ1dGkiOiJHcDFULTNuVGswZVc4RThNSXpvZkFBIiwidmVyIjoiMS4wIiwieG1zX2Z0ZCI6IjRTeWJPT1FaNjQzNEdlQnU0aGVmUkI1SDRkWU92Y2NDRllHUTlrbGZaTXdCZFhObFlYTjBMV1J6YlhNIn0.NOWdVkHrhVasKtuPC3uH42QtY03A5wbyWgYvwcouv3h43lg8glB3SBXxLUohg1uQr5V5pJ4HHn6Neyivz2hCyqGfY90_UMy8yuagxq9pSSnheZKWNDrB6JA53MvolP3lFYYZfE6UYrcrdAtH_FocAOJUla7aqHyDUgovi43k7Nf_aV_i1K-9cDHBv7QT_s472QZlhWlHnVb_-MCM_pxr6lFwz6oNOhIGc4GxmLkey4LWDVADqvGTMENgfyZ5H1e0y0M7HIf25ZYS146SDW4jgRP4O93ly8zoZoNp5--23D06VXlLY2YbxdbtQijjP-sidLQWjALJqjQlvM4WCQ53jw',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                "balance-enquiry": {
-                    "channel": "AVCOM",
-                    "voucher": encryptedVoucher,
-                    "pin": encryptedPin
-                }
-            }),
-            signal,
-        });
-    }, VALIDATE_TIMEOUT_MS);
+    return fetch(fetchUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "balance-enquiry": {
+        "channel": CHANNEL,
+        "voucher": encryptedVoucher,
+        "pin": encryptedPin
+        }
+      }),
+      signal,
+    });
+  }, VALIDATE_TIMEOUT_MS);
 
   if (res.status === 401 && retries.auth < 1) {
-    clearApimTokenCache('digital');
-    clearApimTokenCache('upgrades');
     return validateBalance({ numberAvCredits, pin }, { ...retries, auth: retries.auth + 1 });
   }
 

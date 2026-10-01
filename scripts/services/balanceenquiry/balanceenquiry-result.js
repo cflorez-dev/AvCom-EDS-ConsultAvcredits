@@ -25,10 +25,14 @@ export const mapValidateResult = ({ ok, status, body }) => {
   const card = cards[0];
   const responseCode = card['response-code'];
   const responseMessage = card['response-message'] || '';
+  const isEligibleScenario = 
+    (responseCode === '1120' && responseMessage.includes('0')) ||
+    (responseCode === '1110' && responseMessage.includes('10027')) ||
+    (responseCode === '1110' && responseMessage.includes('10001'));
 
   // Éxito
-  if (responseCode === '1120') {
-    retryCount = 0;
+  if (isEligibleScenario) {
+    resetRetryCount();
     return BALANCE_RESULT.ELIGIBLE;
   }
 
