@@ -17,6 +17,7 @@
       "columns",
       "fragment",
       "design-system-block",
+      "cms-loader",
       "header-logo",
       "header-language-selector",
       "header-user-actions",

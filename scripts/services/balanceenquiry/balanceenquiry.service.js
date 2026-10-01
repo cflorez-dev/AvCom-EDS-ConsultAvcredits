@@ -1,12 +1,7 @@
-import { getApimCredentials, clearApimTokenCache } from '/core/scripts/services/apim/apim-token.service.js';
-import { fetchAEMData } from '/core/scripts/utils/aem-data.js';
+import { getEnvironmentValues } from '/design-system/organisms/get-key-env/get-key-env.js';
 import { encryptPGP } from '../encryption/pgp.service.js';
 
 const CHANNEL = 'AVCOM';
-const getEndpointUrl = async () => {
-  const config = await fetchAEMData('environment');
-  return config.environment.data.find((item) => item.Key === 'AV_ENVIRONMENT_API_URL')?.Text ?? '';
-};
 
 /**
  * Límite de tiempo POR INTENTO. Sin él, un backend que no responde deja el
@@ -50,10 +45,13 @@ const withTimeout = (run, ms) => {
 
 export const validateBalance = async ({ numberAvCredits, pin }, retries = { auth: 0, server: 0 }) => {
   const res = await withTimeout(async (signal) => {
-    const endPoint = await getEndpointUrl();
+  const [endPoint, secretName] = await getEnvironmentValues([
+    'AVC_ENVIRONMENT_API_URL',
+    'AVC_SECRET_NAME_PUBLICKEY',
+  ]);
     const [encryptedVoucher, encryptedPin] = await Promise.all([
-    encryptPGP(numberAvCredits),
-    encryptPGP(pin)
+    encryptPGP(numberAvCredits, secretName),
+    encryptPGP(pin, secretName)
     ]);
 
     const fetchUrl = `${endPoint}/balanceEnquiry`;

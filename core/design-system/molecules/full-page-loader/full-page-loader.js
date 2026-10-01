@@ -16,7 +16,7 @@ const html = htm.bind(h);
  * se le rompe el trazo. Ojo: los assets del repo se sirven tal cual, sin pasar por el
  * pipeline de imágenes de Helix, así que estos bytes son los que viajan.
  */
-export const CONDOR_LOADER_ASSET = '/assets/loader/condor-loader.gif';
+export const CONDOR_LOADER_ASSET = '/core/assets/loader/condor-loader.gif';
 
 /**
  * FullPageLoader - Loader de página completa para transiciones de producto
