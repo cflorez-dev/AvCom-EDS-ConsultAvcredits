@@ -319,9 +319,18 @@ export const ConsultAvCreditsForm = ({
           expiryDate: cardData['expiry-date'],
           openingBalance: formatCurrency(cardData['activation-amount'], cardData['currency-code'])
         };
-
-        // Disparamos evento para mostrar el banner
+        
         window.dispatchEvent(new CustomEvent('avcredits-data-ready', { detail: mappedData }));
+
+        setTimeout(() => {
+          const avCreditsBlock = document.querySelector('.avcredits-banner-container');
+          if (avCreditsBlock) {
+            avCreditsBlock.scrollIntoView({ 
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        }, 100);
         
         showLoader(false);
         setIsSubmitting(false);
