@@ -85,6 +85,12 @@ export const AvCreditsBanner = ({
         issueDateText: getI18nLabel('avCreditsBanner.issueDateText', 'Fecha de expedición'),
         expiryDateText: getI18nLabel('avCreditsBanner.expiryDateText', 'Fecha de vencimiento'),
         openingBalanceText: getI18nLabel('avCreditsBanner.openingBalanceText', 'Saldo inicial'),
+        status_Activated: getI18nLabel('avCreditsBanner.statusActivated', 'Activo'),
+        status_Insufficient_funds: getI18nLabel('avCreditsBanner.statusInsufficientFunds', 'Sin saldo'),
+        status_Expired: getI18nLabel('avCreditsBanner.statusExpired', 'Vencido'),
+        status_Deactivated: getI18nLabel('avCreditsBanner.statusDeactivated', 'Cancelado'),
+        voucherRefundable: getI18nLabel('avCreditsBanner.voucherRefundable', 'Reembolsable'),
+        voucherNonRefundable: getI18nLabel('avCreditsBanner.voucherNonRefundable', 'No reembolsable'),
       });
     };
     loadLabels();
@@ -131,7 +137,7 @@ export const AvCreditsBanner = ({
           <div class="flex items-center gap-x-small">
             <span class="paragraph-p300 text-secondary">${labels.statusText}</span>
             <${StatusIcon} estado=${statusAvCredits} />
-            <span class="paragraph-p300 font-medium text-secondary">${statusAvCredits}</span>
+            <span class="paragraph-p300 font-medium text-secondary">${labels[`status_${statusAvCredits}`]}</span>
           </div>
         </div>
 

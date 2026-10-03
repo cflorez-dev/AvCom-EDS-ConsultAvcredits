@@ -10,7 +10,7 @@ import { fetchAEMData } from '/core/scripts/utils/aem-data.js';
 import { getStoredLanguage } from '/core/scripts/services/header/language-country-selector.js';
 import { validateBalance } from '../../../../scripts/services/balanceenquiry/balanceenquiry.service.js';
 import { mapValidateResult, BALANCE_RESULT, resetRetryCount } from '../../../../scripts/services/balanceenquiry/balanceenquiry-result.js';
-import { showLoader, updateLoaderText } from '/core/scripts/services/loader/loader.service.js';
+import { showLoader, updateLoaderText } from '/core/scripts/services/loader/loader.service.js';import { eventDataError } from '../../../../scripts/gtm-event.js';
 
 const html = htm.bind(h);
 
@@ -348,7 +348,8 @@ export const ConsultAvCreditsForm = ({
       onError({ result, response });
 
     } catch (error) {
-      console.error('[consult-av-credits-form] validate failed:', error);
+      console.error('[consult-av-credits-form] balance failed:', error);
+      eventDataError(error, '501');
       showLoader(false);
       setActiveModal(BALANCE_RESULT.ERROR);
       onError({ result: BALANCE_RESULT.ERROR, error });
@@ -356,7 +357,7 @@ export const ConsultAvCreditsForm = ({
     setIsSubmitting(false);
   };
 
-  const containerClasses = `cabin-upgrade-form w-full ${customClassName}`.trim();
+  const containerClasses = `w-full ${customClassName}`.trim();
   const modalIconOverride = modalImageData?.src;
 
   return html`

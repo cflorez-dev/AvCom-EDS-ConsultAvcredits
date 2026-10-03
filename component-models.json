@@ -2654,27 +2654,6 @@
         "description": "Semantic level for the subtitle"
       },
       {
-        "component": "select",
-        "name": "formType",
-        "label": "Form Type",
-        "options": [
-          {
-            "name": "Cabin Upgrade Form",
-            "value": "cabin-upgrade"
-          },
-          {
-            "name": "MMB Form",
-            "value": "mmb"
-          },
-          {
-            "name": "SSCI Form",
-            "value": "ssci"
-          }
-        ],
-        "value": "cabin-upgrade",
-        "description": "Type of form to display in the banner"
-      },
-      {
         "component": "boolean",
         "name": "showAlert",
         "label": "Show Alert",

@@ -5,7 +5,6 @@ import { shouldShowByTargeting } from '../../core/scripts/utils/target-filter.js
 import { CustomLanguageSearch } from '../../design-system/organisms/lenguage-search/lenguage-search.js';
 
 const html = htm.bind(h);
-const isDesktop = window.matchMedia('(min-width: 768px)');
 
 // 1. COPIAMOS LA FUNCIÓN DEL CORE AQUÍ PARA EVITAR LA DEPENDENCIA CIRCULAR
 function mapBlockData(block) {
@@ -76,26 +75,18 @@ export default async function decorate(block) {
   const renderLanguageSearchInContainer = (targetContainer) => {
     if (!targetContainer) return;
 
-    const renderAppropriateComponent = () => {
-      // OJO AQUÍ: El componente solo se pinta en Desktop por reglas de Avianca
-      if (isDesktop.matches) {
-        render(
-          html`
-            <${CustomLanguageSearch}
-              defaultPos=${rawDefaultPos}
-              customClassName="header-language-selector"
-            />
-          `,
-          targetContainer
-        );
-      } else {
-        render(null, targetContainer);
-      }
-    };
-
-    renderAppropriateComponent();
+    // Renderizamos directamente sin validar el tamaño de la pantalla
+    render(
+      html`
+        <${CustomLanguageSearch}
+          defaultPos=${rawDefaultPos}
+          customClassName="header-language-selector"
+        />
+      `,
+      targetContainer
+    );
+    
     isRendered = true;
-    isDesktop.addEventListener('change', renderAppropriateComponent);
   };
 
   const findAndRenderLanguageSearch = () => {
