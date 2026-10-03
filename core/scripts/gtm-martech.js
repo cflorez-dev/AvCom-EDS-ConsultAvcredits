@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-relative-packages
 import GtmMartech from '../plugins/gtm-martech/src/index.js';
-import { GTM_CONTAINER_ID, isAuthorMode, isTrackingDisabled } from './martech-config.js';
+import { GTM_CONTAINER_ID, isAuthorMode, isTrackingDisabled } from '../../scripts/martech-config.js';
 
 /**
  * Get consent from OneTrust

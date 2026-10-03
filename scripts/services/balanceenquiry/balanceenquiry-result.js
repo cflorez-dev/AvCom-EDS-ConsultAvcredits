@@ -1,3 +1,5 @@
+import { eventDataSuccess, eventDataError } from '../../gtm-event.js';
+
 export const BALANCE_RESULT = {
   ELIGIBLE: 'ELIGIBLE',
   BLOCKED_CARD: 'BLOCKED_CARD', 
@@ -14,7 +16,15 @@ export const resetRetryCount = () => {
 };
 
 export const mapValidateResult = ({ ok, status, body }) => {
-  if (!ok || !body || typeof body !== 'object') return BALANCE_RESULT.ERROR_QC;
+  if (!ok || status.code !== '200') {
+    eventDataError(status.desc, status.code);
+    return BALANCE_RESULT.ERROR;
+  }
+  
+  if (!ok || !body || typeof body !== 'object') {
+    eventDataError(status.desc, status.code);
+    return BALANCE_RESULT.ERROR_QC;
+  }
 
   const balanceEnquiry = body['response-balanceenquiry'];
   if (!balanceEnquiry) return BALANCE_RESULT.ERROR_QC;
@@ -33,11 +43,14 @@ export const mapValidateResult = ({ ok, status, body }) => {
   // Éxito
   if (isEligibleScenario) {
     resetRetryCount();
+    eventDataSuccess(card['card-status'], card['card-type']);
     return BALANCE_RESULT.ELIGIBLE;
   }
 
   // Información no encontrada y máximo de reintentos
   if (responseCode === '1110') {
+    eventDataSuccess(card['card-status'], card['card-type']);
+    
     if (responseMessage.includes('10086')) {
       retryCount += 1;
       if (retryCount >= 3) {
@@ -55,5 +68,6 @@ export const mapValidateResult = ({ ok, status, body }) => {
     }
   }
 
+  eventDataError(status.desc, status.code);
   return BALANCE_RESULT.ERROR;
 };

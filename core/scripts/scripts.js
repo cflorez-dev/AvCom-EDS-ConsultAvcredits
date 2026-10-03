@@ -27,7 +27,7 @@ import { showLoader } from './services/loader/loader.service.js';
 async function loadOneTrust() {
   const {
     isTrackingDisabled, isAuthorMode, getEnvironment, ONETRUST_CONFIG,
-  } = await import('./martech-config.js');
+  } = await import('../../scripts/martech-config.js');
   if (isTrackingDisabled() || isAuthorMode()) return;
   if (getEnvironment() !== 'production') return;
 
@@ -55,13 +55,12 @@ async function loadAdobeLaunch() {
   if (window.__adobeLaunchLoaded) return;
 
   const {
-    isTrackingDisabled, isAuthorMode, getEnvironment, ADOBE_LAUNCH_URLS,
-  } = await import('./martech-config.js');
+    isTrackingDisabled, isAuthorMode, ADOBE_LAUNCH_URLS,
+  } = await import('../../scripts/martech-config.js');
   if (isTrackingDisabled() || isAuthorMode()) return;
 
-  const env = getEnvironment();
   const script = document.createElement('script');
-  script.src = ADOBE_LAUNCH_URLS[env];
+  script.src = ADOBE_LAUNCH_URLS;
   script.async = true;
   document.head.appendChild(script);
 }
@@ -1065,7 +1064,7 @@ async function loadEager(doc) {
   // (set in GtmMartech constructor); OneTrust updates it asynchronously.
   {
     const [{ isAuthorMode }, { default: gtmMartech }] = await Promise.all([
-      import('./martech-config.js'),
+      import('../../scripts/martech-config.js'),
       import('./gtm-martech.js'),
     ]);
     if (!isAuthorMode()) {
@@ -1212,7 +1211,7 @@ async function loadLazy(doc) {
   // Push page_view event and load Adobe Launch here once content is ready.
   {
     const [{ isAuthorMode }, { default: gtmMartech }] = await Promise.all([
-      import('./martech-config.js'),
+      import('../../scripts/martech-config.js'),
       import('./gtm-martech.js'),
     ]);
     if (!isAuthorMode()) {
@@ -1291,7 +1290,7 @@ async function loadLazy(doc) {
  * without impacting the user experience.
  */
 async function loadDelayed() {
-  const { isAuthorMode } = await import('./martech-config.js');
+  const { isAuthorMode } = await import('../../scripts/martech-config.js');
   if (isAuthorMode()) {
     return;
   }

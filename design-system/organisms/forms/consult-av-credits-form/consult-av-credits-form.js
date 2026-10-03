@@ -40,8 +40,6 @@ export const MODAL_ICONS = {
   [BALANCE_RESULT.ERROR_QC]: 'modals/error-icon',
 };
 
-export const MODAL_ICON_FALLBACK = 'modals/upgrade-not-available';
-
 export const MODAL_IMAGE_KEYS = {
   [BALANCE_RESULT.BLOCKED_CARD]: 'ConsultAvCreditsForm.modalBlockedCard.image',
   [BALANCE_RESULT.MAX_RETRIES]: 'ConsultAvCreditsForm.modalMaxRetries.image',
@@ -54,8 +52,7 @@ export const resolveModalIcon = (result, cmsValue, overrideSrc) => {
   const authored = typeof cmsValue === 'string' ? cmsValue.trim() : '';
   return authored
     || overrideSrc
-    || MODAL_ICONS[result]
-    || MODAL_ICON_FALLBACK;
+    || MODAL_ICONS[result];
 };
 
 export const collectModalIllustrations = (labels, overrideSrc) => {
@@ -177,10 +174,10 @@ export const ConsultAvCreditsForm = ({
         notFoundImageAlt: getI18nLabel('ConsultAvCreditsForm.modalNotFound.imageAlt', ''),
         errorImageAlt: getI18nLabel('ConsultAvCreditsForm.modalError.imageAlt', ''),
         errorQcImageAlt: getI18nLabel('ConsultAvCreditsForm.modalErrorQc.imageAlt', ''),
-        notFoundAvCredits: getI18nLabel('ConsultAvCreditsForm.error.pnrNotFound', 'Revisa los 16 dígitos de tu número Avianca Credits.'),
-        notFoundPin: getI18nLabel('ConsultAvCreditsForm.error.apellidoNotFound', 'Revisa los 6 dígitos de tu PIN.'),
-        formAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.form', 'Formulario de upgrade de cabina'),
-        submitAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.submitButton', 'Solicitar ascenso a Business Class'),
+        notFoundAvCredits: getI18nLabel('ConsultAvCreditsForm.error.notFoundAvCredits', 'Revisa los 16 dígitos de tu número Avianca Credits.'),
+        notFoundPin: getI18nLabel('ConsultAvCreditsForm.error.notFoundPin', 'Revisa los 6 dígitos de tu PIN.'),
+        formAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.form', 'Formulario de consulta avianca credits'),
+        submitAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.submitButton', 'Consultar avianca credits'),
       });
       warmModalIllustrations(collectModalIllustrations({
         blockedCardImage: getI18nLabel(MODAL_IMAGE_KEYS[BALANCE_RESULT.BLOCKED_CARD], ''),
@@ -367,7 +364,7 @@ export const ConsultAvCreditsForm = ({
       class=${containerClasses}
       onSubmit=${handleSubmit}
       data-name="ConsultAvCreditsForm"
-      aria-label=${labels.formAriaLabel || 'Formulario de upgrade de cabina'}
+      aria-label=${labels.formAriaLabel || 'Formulario de consulta avianca credits'}
       novalidate
       ...${rest}
     >
@@ -429,7 +426,7 @@ export const ConsultAvCreditsForm = ({
             size="md"
             disabled=${isSubmitting}
             customClassName="w-full lg:w-auto whitespace-nowrap"
-            aria-label=${labels.submitAriaLabel || 'Solicitar ascenso a Business Class'}
+            aria-label=${labels.submitAriaLabel || 'Consultar avianca credits'}
           >
             ${labels.buttonText}
           </${Button}>
@@ -474,24 +471,24 @@ export const ConsultAvCreditsForm = ({
 
     <${ModalAviancaLayout}
       isOpen=${activeModal === BALANCE_RESULT.ERROR}
-      onClose=${closeModal}
+      onClose=${handleClearInputsClose}
       title=${labels.errorTitle}
       description=${labels.errorDescription}
       icon=${resolveModalIcon(BALANCE_RESULT.ERROR, labels.errorImage, modalIconOverride)}
       imageAlt=${labels.errorImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorButton}
-      onPrimaryClick=${closeModal}
+      onPrimaryClick=${handleClearInputsClose}
     />
 
     <${ModalAviancaLayout}
       isOpen=${activeModal === BALANCE_RESULT.ERROR_QC}
-      onClose=${closeModal}
+      onClose=${handleClearInputsClose}
       title=${labels.errorQcTitle}
       description=${labels.errorQcDescription}
       icon=${resolveModalIcon(BALANCE_RESULT.ERROR_QC, labels.errorQcImage, modalIconOverride)}
       imageAlt=${labels.errorQcImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorQcButton}
-      onPrimaryClick=${closeModal}
+      onPrimaryClick=${handleClearInputsClose}
     />
   `;
 };
