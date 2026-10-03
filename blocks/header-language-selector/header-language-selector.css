@@ -2,3 +2,11 @@
 .force-green-border[data-open="true"] {
   border-color: #0b9b3a !important;
 }
+
+.header-language-selector {
+  display: flex;
+}
+
+.header-navbar-desktop, .header-navbar-mobile {
+  display: none !important;
+}
