@@ -1,3 +1,5 @@
+import { getEnvironmentValues } from '/design-system/organisms/get-key-env/get-key-env.js';
+
 /**
  * MarTech Configuration for Avianca EDS
  * Centralizes environment detection and script URLs
@@ -12,9 +14,8 @@ export function getEnvironment() {
 
   // Production: avianca.com (with or without www) and the fenix-prd aem.live host
   if (
-    hostname === 'avianca.com'
-    || hostname === 'www.avianca.com'
-    || hostname === 'main--fenix-prd--aviancavsts.aem.live'
+    hostname.includes('avianca.com') || 
+    hostname.includes('prd')
   ) {
     return 'production';
   }
@@ -50,16 +51,13 @@ export function isAuthorMode() {
 }
 
 // Adobe Launch URLs per environment
-export const ADOBE_LAUNCH_URLS = {
-  development: 'https://assets.adobedtm.com/6ac3e976c146/4026528cdd43/launch-ENf32bf57525554e6f8b6d31b098cb7d66-development.min.js',
-  production: 'https://assets.adobedtm.com/6ac3e976c146/4026528cdd43/launch-EN80a601f9b57746f2985c5b443538b3c1.min.js',
-};
+export const ADOBE_LAUNCH_URLS = await getEnvironmentValues(['ADOBE_LAUNCH_URLS']);
 
 // OneTrust Configuration
 export const ONETRUST_CONFIG = {
-  scriptUrl: 'https://cdn.cookielaw.org/scripttemplates/otSDKStub.js',
-  domainScript: 'c6058a04-d31f-4774-b497-6894f2030591',
+  scriptUrl: await getEnvironmentValues(['ONETRUST_CONFIG_URL']),
+  domainScript: await getEnvironmentValues(['ONETRUST_CONFIG_DOMAIN']),
 };
 
 // GTM Container ID
-export const GTM_CONTAINER_ID = 'GTM-P35N52K';
+export const GTM_CONTAINER_ID = await getEnvironmentValues(['GTM_CONTAINER_ID']);

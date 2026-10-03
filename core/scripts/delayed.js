@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-cycle
 import gtmMartech from './gtm-martech.js';
-import { isAuthorMode } from './martech-config.js';
+import { isAuthorMode } from '../../scripts/martech-config.js';
 import { loadCentribalChat } from './services/centribal/centribal.js';
 
 // GTM Martech delayed phase - loads non-critical containers

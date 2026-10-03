@@ -77,7 +77,6 @@ export const validateBalance = async ({ numberAvCredits, pin }, retries = { auth
   }
 
   if (res.status >= 500 && retries.server < 1) {
-    await sleep(RETRY_5XX_DELAY_MS);
     return validateBalance({ numberAvCredits, pin }, { ...retries, server: retries.server + 1 });
   }
 
@@ -87,5 +86,5 @@ export const validateBalance = async ({ numberAvCredits, pin }, retries = { auth
   } catch (_) {
     body = null;
   }
-  return { ok: res.ok, status: res.status, body };
+  return { ok: res.ok, status: {code:res.status.toString(),desc:res.statusText}, body };
 };
