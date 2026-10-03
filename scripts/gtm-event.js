@@ -1,5 +1,5 @@
 const [{ isAuthorMode }, { default: gtmMartech }] = await Promise.all([
-    import('/core/scripts/martech-config.js'),
+    import('./martech-config.js'),
     import('/core/scripts/gtm-martech.js'),
 ]);
 
