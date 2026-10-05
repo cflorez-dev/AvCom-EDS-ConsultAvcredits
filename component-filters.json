@@ -36,6 +36,21 @@
     ]
   },
   {
+    "id": "columns",
+    "components": [
+      "column"
+    ]
+  },
+  {
+    "id": "column",
+    "components": [
+      "text",
+      "image",
+      "button",
+      "title"
+    ]
+  },
+  {
     "id": "header-navbar",
     "components": [
       "header-menu-item"
