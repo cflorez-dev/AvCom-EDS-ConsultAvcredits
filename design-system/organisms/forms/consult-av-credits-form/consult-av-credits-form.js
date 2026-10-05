@@ -250,8 +250,7 @@ export const ConsultAvCreditsForm = ({
     const decimals = (isCOP && isWholeNumber) ? 0 : 2;
     
     let locale = 'es-CO';
-    if (currencyCode === 'USD') locale = 'en-US';
-    if (currencyCode === 'ARS') locale = 'es-AR';
+    if (!isCOP) locale = 'en-US';
     
     const formattedNumber = new Intl.NumberFormat(locale, {
       minimumFractionDigits: decimals,
