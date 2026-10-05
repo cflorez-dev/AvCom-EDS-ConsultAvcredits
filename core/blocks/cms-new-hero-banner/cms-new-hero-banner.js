@@ -7,7 +7,7 @@ import { fetchAEMData } from '../../scripts/utils/aem-data.js';
 import { resolveLocale } from '../../scripts/utils/locale.js';
 import extractHeroProps from './cms-new-hero-banner-helper.js';
 
-loadCSS('core/design-system/organisms/cms-new-hero-banner/cms-new-hero-banner.css');
+loadCSS('/core/design-system/organisms/cms-new-hero-banner/cms-new-hero-banner.css');
 
 const html = htm.bind(h);
 
