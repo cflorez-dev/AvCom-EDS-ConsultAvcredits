@@ -40,16 +40,6 @@
     ]
   },
   {
-    "id": "text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "text",
-        "label": "Text"
-      }
-    ]
-  },
-  {
     "id": "title",
     "fields": [
       {
@@ -2662,6 +2652,19 @@
         ],
         "value": "p",
         "description": "Semantic level for the subtitle"
+      },
+      {
+        "component": "select",
+        "name": "formType",
+        "label": "Form Type",
+        "options": [
+          {
+            "name": "View avianca credits Form",
+            "value": "cabin-upgrade"
+          }
+        ],
+        "value": "cabin-upgrade",
+        "description": "Type of form to display in the banner"
       },
       {
         "component": "boolean",
