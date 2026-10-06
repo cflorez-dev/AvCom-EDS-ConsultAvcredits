@@ -526,16 +526,6 @@
     ]
   },
   {
-    "id": "text",
-    "fields": [
-      {
-        "component": "richtext",
-        "name": "text",
-        "label": "Text"
-      }
-    ]
-  },
-  {
     "id": "title",
     "fields": [
       {
