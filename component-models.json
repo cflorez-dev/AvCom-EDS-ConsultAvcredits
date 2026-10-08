@@ -2753,7 +2753,7 @@
     ]
   },
   {
-    "id": "txn-history",
+    "id": "transactions-history",
     "fields": [
       {
         "component": "text",
