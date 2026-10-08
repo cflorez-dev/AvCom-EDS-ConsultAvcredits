@@ -8,9 +8,12 @@ import { preloadIcons } from '/core/design-system/atoms/icon/icon.js';
 import { FullPageLoader, CONDOR_LOADER_ASSET } from '/core/design-system/molecules/full-page-loader/full-page-loader.js';
 import { fetchAEMData } from '/core/scripts/utils/aem-data.js';
 import { getStoredLanguage } from '/core/scripts/services/header/language-country-selector.js';
-import { validateBalance } from '../../../../scripts/services/balanceenquiry/balanceenquiry.service.js';
-import { mapValidateResult, BALANCE_RESULT, resetRetryCount } from '../../../../scripts/services/balanceenquiry/balanceenquiry-result.js';
-import { showLoader, updateLoaderText } from '/core/scripts/services/loader/loader.service.js';import { eventDataError } from '../../../../scripts/gtm-event.js';
+import { validateBalance, txnHistory } from '../../../../scripts/services/av-credits/av-credits.service.js';
+import { mapValidateResult, BALANCE_RESULT, resetRetryCount } from '../../../../scripts/services/av-credits/balanceenquiry-result.js';
+import { showLoader, updateLoaderText } from '/core/scripts/services/loader/loader.service.js';
+import { eventDataError } from '../../../../scripts/gtm-event.js';
+import { getEnvironmentValues } from '/design-system/organisms/get-key-env/get-key-env.js';
+import { encryptPGP } from '/scripts/services/encryption/pgp.service.js';
 
 const html = htm.bind(h);
 
@@ -290,9 +293,18 @@ export const ConsultAvCreditsForm = ({
     }
     setUseFallbackLoader(!hasCmsLoader);
 
+    
+    const [secretName] = await getEnvironmentValues([
+      'AVC_SECRET_NAME_PUBLICKEY',
+    ]);
+    const [encryptedVoucher, encryptedPin] = await Promise.all([
+    encryptPGP(numberAvCredits, secretName),
+    encryptPGP(pin, secretName)
+    ]);
+
     try {
       // Llamado al servicio usando las variables
-      const response = await validateBalance({ numberAvCredits, pin });
+      const response = await validateBalance(encryptedVoucher, encryptedPin);
       
       // Enviamos TODO el objeto response a nuestra nueva función
       const result = mapValidateResult(response); 
@@ -328,6 +340,7 @@ export const ConsultAvCreditsForm = ({
           }
         }, 100);
         
+        const resHistory = await txnHistory(encryptedVoucher);
         showLoader(false);
         setIsSubmitting(false);
         return;

@@ -2753,6 +2753,43 @@
     ]
   },
   {
+    "id": "txn-history",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "title",
+        "label": "Title",
+        "value": "",
+        "description": "Título de la sección principal. Ej: Transacciones realizadas."
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "emptyStateImage",
+        "label": "Empty State Image",
+        "multi": false,
+        "description": "Icono o imagen que se muestra cuando no hay datos."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "emptyStateTitle",
+        "label": "Empty State Title",
+        "value": "",
+        "description": "Título de estado vacío. Ej: No has realizado transacciones con tu avianca credits."
+      },
+      {
+        "component": "richtext",
+        "valueType": "string",
+        "name": "emptyStateSubtitle",
+        "label": "Empty State Subtitle",
+        "value": "",
+        "description": "Subtítulo de estado vacío. Usa el editor para agregar el enlace al Centro de ayuda."
+      }
+    ]
+  },
+  {
     "id": "accordion-simplified",
     "fields": [
       {

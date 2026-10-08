@@ -1,6 +1,7 @@
 // Importamos OpenPGP nativamente desde un CDN para ES Modules
 import * as openpgp from 'openpgp';
 import { getEnvironmentValues } from '/design-system/organisms/get-key-env/get-key-env.js';
+import { httpClient } from '../../http-client.js';
 
 const [endPoint] = await getEnvironmentValues(['AVC_ENVIRONMENT_API_URL']);
 let PUBLIC_KEY_ARMORED = '';
@@ -20,13 +21,13 @@ export const encryptPGP = async (text, secretName) => {
     
     if (!PUBLIC_KEY_ARMORED || currentSecretName !== secretName) {
       const url = `${endPoint}/publicKey?secretName=${secretName}`;
-      const response = await fetch(url, { method: 'GET' });
+      const response = await httpClient(url);
       
-      if (!response.ok) {
+      if (!response.ok || !response.body) {
         throw new Error(`Error HTTP: ${response.status}`);
       }
       
-      const data = await response.json();
+      const data = await response.body;
       
       PUBLIC_KEY_ARMORED = atob(data.value);
       currentSecretName = secretName;
