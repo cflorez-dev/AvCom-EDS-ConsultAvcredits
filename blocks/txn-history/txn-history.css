@@ -1,0 +1,117 @@
+/* Contenedor principal del bloque */
+.transactions {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 24px 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  font-family: var(--body-font-family, sans-serif);
+  border: 1px solid #f0f0f0;
+}
+
+.transactions-header-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+/* ---------------------------------
+   VISTA 1: CON TRANSACCIONES
+--------------------------------- */
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.transaction-card {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column; /* Mobile por defecto */
+  gap: 12px;
+}
+
+.transaction-card p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.tx-pnr {
+  font-size: 14px;
+  color: #333333;
+}
+
+.tx-details {
+  font-size: 12px;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px !important;
+}
+
+.tx-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.tx-amount {
+  font-size: 14px;
+  color: #333333;
+}
+
+/* ---------------------------------
+   VISTA 2: SIN TRANSACCIONES (Empty State)
+--------------------------------- */
+.transactions-empty-state {
+  border: 1px dashed #dcdcdc;
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.empty-state-icon picture img {
+  max-width: 120px;
+  height: auto;
+}
+
+.empty-state-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+}
+
+.empty-state-subtitle {
+  font-size: 14px;
+  color: #666666;
+}
+
+.empty-state-subtitle a {
+  color: #008296; /* Color azul de Avianca */
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* ---------------------------------
+   MEDIA QUERIES (Tablet & Desktop >= 768px)
+--------------------------------- */
+@media (min-width: 768px) {
+  .transactions {
+    padding: 32px 24px;
+  }
+
+  /* Cambia la tarjeta de pila (columna) a fila (horizontal) */
+  .transaction-card {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

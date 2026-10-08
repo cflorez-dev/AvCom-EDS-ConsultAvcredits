@@ -1,8 +1,3 @@
-import { getEnvironmentValues } from '/design-system/organisms/get-key-env/get-key-env.js';
-import { encryptPGP } from '../encryption/pgp.service.js';
-
-const CHANNEL = 'AVCOM';
-
 /**
  * Límite de tiempo POR INTENTO. Sin él, un backend que no responde deja el
  * FullPageLoader a pantalla completa indefinidamente: no tiene botón de cierre, ni
@@ -43,48 +38,62 @@ const withTimeout = (run, ms) => {
   return Promise.race([attempt, deadline]).finally(() => clearTimeout(timer));
 };
 
-export const validateBalance = async ({ numberAvCredits, pin }, retries = { auth: 0, server: 0 }) => {
+/**
+ * Cliente HTTP genérico con soporte para timeout y reintentos automáticos.
+ * 
+ * @param {string} url - La URL del endpoint.
+ * @param {object} options - Opciones de fetch (method, body, headers, etc.).
+ * @param {object} retries - Control interno de reintentos { auth, server }.
+ * @returns {object} { ok, status, body }
+ */
+export const httpClient = async (url, options = {}, retries = { auth: 0, server: 0 }) => {
+  const { method = 'GET', body, headers = {}, ...restOptions } = options;
+
+  // Configuramos las opciones base de fetch
+  const fetchOptions = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers, // Permite sobreescribir headers si es necesario
+    },
+    ...restOptions,
+  };
+
+  // Solo adjuntamos el body si no es un GET/HEAD
+  if (body && method !== 'GET' && method !== 'HEAD') {
+    fetchOptions.body = typeof body === 'string' ? body : JSON.stringify(body);
+  }
+
+  // Ejecutamos la petición con el wrapper de timeout
   const res = await withTimeout(async (signal) => {
-  const [endPoint, secretName] = await getEnvironmentValues([
-    'AVC_ENVIRONMENT_API_URL',
-    'AVC_SECRET_NAME_PUBLICKEY',
-  ]);
-    const [encryptedVoucher, encryptedPin] = await Promise.all([
-    encryptPGP(numberAvCredits, secretName),
-    encryptPGP(pin, secretName)
-    ]);
-
-    const fetchUrl = `${endPoint}/balanceEnquiry`;
-
-    return fetch(fetchUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "balance-enquiry": {
-        "channel": CHANNEL,
-        "voucher": encryptedVoucher,
-        "pin": encryptedPin
-        }
-      }),
-      signal,
-    });
+    return fetch(url, { ...fetchOptions, signal });
   }, VALIDATE_TIMEOUT_MS);
 
+  // Manejo de reintentos por error de autenticación (401)
   if (res.status === 401 && retries.auth < 1) {
-    return validateBalance({ numberAvCredits, pin }, { ...retries, auth: retries.auth + 1 });
+    // Nota: Aquí podrías agregar lógica para refrescar un token antes de reintentar
+    return httpClient(url, options, { ...retries, auth: retries.auth + 1 });
   }
 
+  // Manejo de reintentos por error del servidor (500+)
   if (res.status >= 500 && retries.server < 1) {
-    return validateBalance({ numberAvCredits, pin }, { ...retries, server: retries.server + 1 });
+    return httpClient(url, options, { ...retries, server: retries.server + 1 });
   }
 
-  let body = null;
+  // Procesamiento seguro de la respuesta
+  let responseBody = null;
   try {
-    body = await res.json();
+    responseBody = await res.json();
   } catch (_) {
-    body = null;
+    responseBody = null; // Falla silenciosamente si la respuesta no es un JSON válido
   }
-  return { ok: res.ok, status: {code:res.status.toString(),desc:res.statusText}, body };
+
+  return { 
+    ok: res.ok, 
+    status: { 
+      code: res.status.toString(), 
+      desc: res.statusText 
+    }, 
+    body: responseBody 
+  };
 };
