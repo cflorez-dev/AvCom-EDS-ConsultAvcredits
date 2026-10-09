@@ -51,7 +51,7 @@ const StatusIcon = ({ estado }) => {
   `;
 };
 
-export const AvCreditsBanner = ({
+export const AvCreditsBanner = async ({
   headerTitleHTML = '',
   headerIconData = null,
   currentBalance = 'COP 300.000',
@@ -64,6 +64,7 @@ export const AvCreditsBanner = ({
   openingBalance = 'COP 1.567.098'
 }) => {
   const [labels, setLabels] = useState({});
+  const [refund, setRefund] = useState('');
 
   useEffect(() => {
     const loadLabels = async () => {
@@ -93,7 +94,24 @@ export const AvCreditsBanner = ({
         voucherNonRefundable: getI18nLabel('avCreditsBanner.voucherNonRefundable', 'No reembolsable'),
       });
     };
+    const loadTypeRefund = async () => {
+      try {
+        const refundData = await fetchAEMData('program-cpg');
+        
+        if (refundData && refundData.data) {
+          const foundItem = refundData.data.find(item => item.key === typeRefund);
+          const refundValue = foundItem ? foundItem.value : typeRefund;
+          
+          setRefund(refundValue); 
+        }
+      } catch (error) {
+        console.error("Error cargando los tipos de reembolso:", error);
+        setRefund(typeRefund); // Fallback en caso de error en el fetch
+      }
+    };
+
     loadLabels();
+    loadTypeRefund();
   }, []);
 
   return html`
@@ -133,7 +151,7 @@ export const AvCreditsBanner = ({
         <!-- Info Superior -->
         <div class="flex flex-col gap-x-small">
           <h3 class="heading-h400 text-primary m-0!">${labels.numberAvCreditsText}${avCreditsNumber}</h3>
-          <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} ${typeRefund}</p>
+          <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} ${labels[refund] || typeRefund}</p>
           <div class="flex items-center gap-x-small">
             <span class="paragraph-p300 text-secondary">${labels.statusText}</span>
             <${StatusIcon} estado=${statusAvCredits} />
