@@ -340,7 +340,7 @@ export const ConsultAvCreditsForm = ({
           }
         }, 100);
         
-        const resHistory = await txnHistory(encryptedVoucher);
+        //const resHistory = await txnHistory(encryptedVoucher);
         showLoader(false);
         setIsSubmitting(false);
         return;
