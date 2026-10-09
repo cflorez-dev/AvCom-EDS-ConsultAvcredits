@@ -51,7 +51,7 @@ const StatusIcon = ({ estado }) => {
   `;
 };
 
-export const AvCreditsBanner = async ({
+export const AvCreditsBanner = ({
   headerTitleHTML = '',
   headerIconData = null,
   currentBalance = 'COP 300.000',
