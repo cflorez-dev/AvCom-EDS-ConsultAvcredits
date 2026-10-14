@@ -340,7 +340,22 @@ export const ConsultAvCreditsForm = ({
           }
         }, 100);
         
-        //const resHistory = await txnHistory(encryptedVoucher);
+        const hasTransactionsBlock = document.querySelector('.transactions-history-wrapper');
+        
+        if (hasTransactionsBlock) {
+          try {
+            const resHistory = await txnHistory(encryptedVoucher);
+            const txnData = resHistory.body['response-txnhistory']?.cards || [];
+            hasTransactionsBlock.classList.remove('hidden');
+            
+            window.dispatchEvent(new CustomEvent('transaction-data-ready', { detail: txnData }));
+
+          } catch (error) {
+            console.error('Error al obtener el historial de transacciones:', error);
+            hasTransactionsBlock.classList.add('hidden');
+          }
+        }
+
         showLoader(false);
         setIsSubmitting(false);
         return;
