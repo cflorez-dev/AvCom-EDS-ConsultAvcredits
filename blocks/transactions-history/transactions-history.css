@@ -1,56 +1,89 @@
+.transactions-history-container:not(.hidden) > .transactions-history-wrapper {
+    margin-top: var(--spacing-x-large);
+}
+
 /* Contenedor principal del bloque */
-.transactions {
-  background-color: #ffffff;
-  border-radius: 12px;
-  padding: 24px 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  font-family: var(--body-font-family, sans-serif);
-  border: 1px solid #f0f0f0;
+.transactions-history.block {
+  display: flex;
+  padding: var(--padding-24);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gap-32);
+  align-self: stretch;
+  border-radius: var(--border-radius-large);
+  border: 1px solid var(--border-stroke-default);
+  background: var(--bg-brand-primary-lighter);
 }
 
 .transactions-header-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #333333;
-  margin-top: 0;
-  margin-bottom: 24px;
+  color: var(--text-normal-primary);
+  font-size: 1.25rem;
+  font-style: normal;
+  line-height: normal;
+  margin: 0;
 }
 
 /* ---------------------------------
    VISTA 1: CON TRANSACCIONES
 --------------------------------- */
+
+.transactions-content-wrapper {
+  width: 100%;
+}
+
 .transactions-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .transaction-card {
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  padding: 16px;
   display: flex;
-  flex-direction: column; /* Mobile por defecto */
-  gap: 12px;
+  padding: var(--padding-16);
+  padding-left: 8px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--gap-24);
+  align-self: stretch;
+}
+
+.transaction-card:nth-child(odd) {
+  background: #F9FAFB;
+}
+
+.tx-info-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--gap-8);
+  align-self: stretch;
 }
 
 .transaction-card p {
   margin: 0;
-  line-height: 1.4;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 }
 
-.tx-pnr {
-  font-size: 14px;
-  color: #333333;
+.tx-default {
+  font-size: 1rem;
+  color: var(--text-normal-primary);
 }
 
 .tx-details {
-  font-size: 12px;
-  color: #666666;
+  font-size: var(--font-size-small);
+  color: var(--text-normal-secondary);
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 4px !important;
+  gap: var(--gap-8);
+}
+
+.tx-line {
+  width: 1px;
+  height: 12px;
+  background: var(--border-stroke-dark);
 }
 
 .tx-icon {
@@ -58,60 +91,74 @@
   align-items: center;
 }
 
-.tx-amount {
-  font-size: 14px;
-  color: #333333;
-}
-
 /* ---------------------------------
    VISTA 2: SIN TRANSACCIONES (Empty State)
 --------------------------------- */
 .transactions-empty-state {
-  border: 1px dashed #dcdcdc;
-  border-radius: 12px;
-  padding: 40px 20px;
-  text-align: center;
   display: flex;
+  padding: var(--padding-24);
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--gap-24);
+  align-self: stretch;
+  border-radius: 8px;
+  border: 1px dashed var(--border-stroke-default);
+  background: var(--bg-page-light);
 }
 
 .empty-state-icon picture img {
   max-width: 120px;
-  height: auto;
+  max-height: 120px;
+}
+
+.empty-state-description {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap-8);
+  align-self: stretch;
 }
 
 .empty-state-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333333;
+  color: var(--text-normal-primary);
+  text-align: center;
+  font-size: 18px;
+  font-style: normal;
+  line-height: normal;
   margin: 0;
 }
 
-.empty-state-subtitle {
-  font-size: 14px;
-  color: #666666;
+.empty-state-subtitle p {
+  color: var(--text-normal-primary);
+  text-align: center;
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin:0;
 }
 
-.empty-state-subtitle a {
-  color: #008296; /* Color azul de Avianca */
-  text-decoration: underline;
-  font-weight: 500;
+.empty-state-subtitle p a {
+  color: var(--text-link-default);
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-skip-ink: auto;
+  text-decoration-thickness: auto;
+  text-underline-offset: auto;
+  text-underline-position: from-font;
 }
 
 /* ---------------------------------
    MEDIA QUERIES (Tablet & Desktop >= 768px)
 --------------------------------- */
 @media (min-width: 768px) {
-  .transactions {
-    padding: 32px 24px;
-  }
-
-  /* Cambia la tarjeta de pila (columna) a fila (horizontal) */
   .transaction-card {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .empty-state-title {
+    font-size: 24px;
   }
 }

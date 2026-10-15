@@ -340,7 +340,29 @@ export const ConsultAvCreditsForm = ({
           }
         }, 100);
         
-        //const resHistory = await txnHistory(encryptedVoucher);
+        const hasTransactionsBlock = document.querySelector('.transactions-history-wrapper');
+        
+        if (hasTransactionsBlock) {
+          try {
+            const resHistory = await txnHistory(encryptedVoucher);
+            const txnCards = resHistory.body['response-txnhistory']?.cards || [];
+            const txnData = txnCards.filter(card => {
+              const isGiftCardRedeem = card['transaction-type'] === 'GIFT CARD REDEEM';
+              const isNotPreAuth = !['PREAUTH SUCCESS', 'PREAUTH CANCEL'].includes(card['transaction-status']);
+              
+              return isGiftCardRedeem && isNotPreAuth;
+            });
+            
+            hasTransactionsBlock.classList.remove('hidden');
+            
+            window.dispatchEvent(new CustomEvent('transaction-data-ready', { detail: txnData }));
+
+          } catch (error) {
+            console.error('Error al obtener el historial de transacciones:', error);
+            hasTransactionsBlock.classList.add('hidden');
+          }
+        }
+
         showLoader(false);
         setIsSubmitting(false);
         return;

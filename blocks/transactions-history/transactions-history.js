@@ -1,4 +1,66 @@
+import { fetchAEMData } from '../../core/scripts/utils/aem-data.js';
+import { getStoredLanguage } from '../../core/scripts/services/header/language-country-selector.js';
+
+let i18Cache = null;
+let i18FallbackCache = null;
+
+export const pickI18nText = (catalogs, key, fallback = '') => {
+  const found = (catalogs || [])
+    .filter(Array.isArray)
+    .map((catalog) => catalog.find((item) => item?.Key === key))
+    .find((entry) => typeof entry?.Text === 'string');
+  return found ? found.Text : fallback;
+};
+
+function getI18nLabel(key, fallback = '') {
+  return pickI18nText([i18Cache, i18FallbackCache], key, fallback);
+}
+
+const formatDate = (isoString) => {
+  if (!isoString) return '';
+  const date = new Date(isoString);
+  const month = date.toLocaleDateString('es-ES', { month: 'short' }).replace('.', '');
+  const monthCapitalized = month.charAt(0).toUpperCase() + month.slice(1);
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${day} ${monthCapitalized} ${year}`;
+};
+
+const formatCurrency = (amountString, currencyCode) => {
+  if (!amountString) return '';
+  const numericValue = Number(amountString) / 100;
+  const isCOP = currencyCode?.toUpperCase() === 'COP';
+  const isWholeNumber = numericValue % 1 === 0;
+  const decimals = (isCOP && isWholeNumber) ? 0 : 2;
+  
+  let locale = 'es-CO';
+  if (!isCOP) locale = 'en-US';
+  
+  const formattedNumber = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  }).format(numericValue);
+
+  return `${currencyCode} ${formattedNumber}`;
+};
+
 export default async function decorate(block) {
+  // 1. LÓGICA i18n EN VANILLA JS (Reemplaza a useEffect y useState)
+  if (!i18Cache) {
+    const cookieLanguage = getStoredLanguage() || 'es';
+    const i18Data = await fetchAEMData(`i18/${cookieLanguage}`);
+    i18Cache = i18Data?.data || [];
+    if (cookieLanguage !== 'es' && !i18FallbackCache) {
+      const esFallback = await fetchAEMData('i18/es');
+      i18FallbackCache = esFallback?.data || [];
+    }
+  }
+
+  // Guardamos el texto en una constante simple
+  const reservationText = getI18nLabel('transactionsHistory.reservationText', 'Código de reserva:');
+  const status_approved = getI18nLabel('transactionsHistory.status_approved', 'Aprobado');
+  const status_rejected = getI18nLabel('transactionsHistory.status_rejected', 'Rechazado');
+
   const rows = Array.from(block.children);
   const titleText = rows[0]?.textContent.trim() || 'Transacciones realizadas';
   const emptyStateImageHTML = rows[1]?.querySelector('picture')?.outerHTML || '';
@@ -7,12 +69,10 @@ export default async function decorate(block) {
 
   block.innerHTML = '';
 
-  // 1. TÍTULO PRINCIPAL INSTRUMENTADO
-  const header = document.createElement('h3');
+  const header = document.createElement('h5');
   header.className = 'transactions-header-title';
   header.textContent = titleText;
   
-  // ¡NUEVO!: Enlazamos el título con el field "title" del model
   header.setAttribute('data-aue-prop', 'title');
   header.setAttribute('data-aue-type', 'text');
   header.setAttribute('data-aue-label', 'Title');
@@ -27,47 +87,46 @@ export default async function decorate(block) {
     contentWrapper.innerHTML = '';
 
     if (!transactionsData || transactionsData.length === 0) {
-      // 2. ESTADO VACÍO INSTRUMENTADO
-      // ¡NUEVO!: Se agregan los data-aue-* a cada contenedor del Empty State
       contentWrapper.innerHTML = `
         <div class="transactions-empty-state">
           <div class="empty-state-icon" data-aue-prop="emptyStateImage" data-aue-type="reference" data-aue-label="Empty State Image">
             ${emptyStateImageHTML}
           </div>
-          <h4 class="empty-state-title" data-aue-prop="emptyStateTitle" data-aue-type="text" data-aue-label="Empty State Title">
-            ${emptyStateTitle}
-          </h4>
-          <div class="empty-state-subtitle" data-aue-prop="emptyStateSubtitle" data-aue-type="richtext" data-aue-label="Empty State Subtitle">
-            ${emptyStateSubtitleHTML}
+          <div class="empty-state-description">
+            <h4 class="empty-state-title" data-aue-prop="emptyStateTitle" data-aue-type="text" data-aue-label="Empty State Title">
+              ${emptyStateTitle}
+            </h4>
+            <div class="empty-state-subtitle" data-aue-prop="emptyStateSubtitle" data-aue-type="richtext" data-aue-label="Empty State Subtitle">
+              ${emptyStateSubtitleHTML}
+            </div>
           </div>
         </div>
       `;
       return;
     }
 
-    // ... (El resto del código de la VISTA 1 con transacciones se mantiene igual)
     const listWrapper = document.createElement('div');
     listWrapper.className = 'transactions-list';
 
     const latestTransactions = transactionsData.slice(0, 3);
 
     latestTransactions.forEach((tx) => {
-      // Iconos SVG en línea basados en el diseño
-      const iconSuccess = `<svg width="16" height="16" viewBox="0 0 24 24" fill="#00a650"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1.997-7.17l7.07-7.071-1.414-1.414-5.656 5.657-2.829-2.829-1.414 1.414 4.243 4.243z"/></svg>`;
-      const iconError = `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e3000f"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm3.536-12.121L14.12 8.464 12 10.586 9.879 8.464 8.464 9.88l2.122 2.121-2.122 2.122 1.415 1.414L12 13.414l2.121 2.122 1.415-1.414-2.122-2.122 2.122-2.121z"/></svg>`;
+      const iconSuccess = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C13.14 1.5 16.5 4.86 16.5 9C16.5 13.14 13.14 16.5 9 16.5C4.86 16.5 1.5 13.14 1.5 9C1.5 4.86 4.86 1.5 9 1.5ZM7.96875 10.1624L5.8689 8.0625L4.875 9.0564L7.96875 12.1501L13.125 6.9939L12.1311 6L7.96875 10.1624Z" fill="#1EA93C"/></svg>`;
+      const iconError = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M9 1.5C4.86 1.5 1.5 4.86 1.5 9C1.5 13.14 4.86 16.5 9 16.5C13.14 16.5 16.5 13.14 16.5 9C16.5 4.86 13.14 1.5 9 1.5ZM11.1213 12.182L9 10.0607L6.87868 12.182L5.81802 11.1213L7.93934 9L5.81802 6.87868L6.87868 5.81802L9 7.93934L11.1213 5.81802L12.182 6.87868L10.0607 9L12.182 11.1213L11.1213 12.182Z" fill="#FF1C46"/></svg>`;
       
-      const isSuccess = tx.status.toLowerCase() === 'aprobado';
+      const isSuccess = tx['transaction-status'].toLowerCase() === 'success';
       const statusIcon = isSuccess ? iconSuccess : iconError;
+      const statusText = isSuccess ? status_approved : status_rejected;
 
       const card = document.createElement('div');
       card.className = 'transaction-card';
       card.innerHTML = `
         <div class="tx-info-left">
-          <p class="tx-pnr">Código de reserva: <strong>${tx.pnr}</strong></p>
-          <p class="tx-details">${tx.date} | ${tx.status} <span class="tx-icon">${statusIcon}</span></p>
+          <p class="tx-default">${reservationText} <strong>${tx['reference-number']}</strong></p>
+          <p class="tx-details"><span>${formatDate(tx['transaction-date'])}</span> <span class="tx-line"></span> <span>${statusText}</span> <span class="tx-icon">${statusIcon}</span></p>
         </div>
         <div class="tx-info-right">
-          <p class="tx-amount"><strong>${tx.currency} ${tx.amount}</strong></p>
+          <p class="tx-default"><strong>${formatCurrency(tx['transaction-amount'], tx.currency)}</strong></p>
         </div>
       `;
       listWrapper.appendChild(card);
@@ -76,14 +135,8 @@ export default async function decorate(block) {
     contentWrapper.appendChild(listWrapper);
   };
 
-  // 5. MOCK DE DATOS (Puedes reemplazar esto con tu llamada a la API)
-  // Para probar la vista vacía, pasa un array vacío: renderTransactions([])
-  const mockData = [
-    { pnr: '3VPN78', date: '10 Jun 2026', status: 'Aprobado', currency: 'COP', amount: '486.025' },
-    { pnr: 'F4FNG1', date: '10 Jun 2026', status: 'Aprobado', currency: 'COP', amount: '555.234' },
-    { pnr: 'P9FN4N', date: '19 May 2026', status: 'Rechazado', currency: 'COP', amount: '555.234' }
-  ];
-
-  // Ejecutamos el render
-  renderTransactions(mockData);
+  window.addEventListener('transaction-data-ready', (event) => {
+    const txnData = event.detail; 
+    renderTransactions(txnData);
+  });
 }

@@ -7,7 +7,6 @@ const html = htm.bind(h);
 
 /**
  * Convierte texto en mayúsculas a formato Capitalizado (Title Case)
- * Ej: "CESAR FLOREZ" -> "Cesar Florez"
  */
 const capitalizeName = (name) => {
   if (!name) return '';
