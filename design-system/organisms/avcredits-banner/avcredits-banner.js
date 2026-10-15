@@ -54,6 +54,7 @@ const StatusIcon = ({ estado }) => {
 export const AvCreditsBanner = ({
   headerTitleHTML = '',
   headerIconData = null,
+  showRefundType = false,
   currentBalance = 'COP 300.000',
   holderName = 'Juan Sebastián Cruz',
   avCreditsNumber = '8901',
@@ -151,7 +152,9 @@ export const AvCreditsBanner = ({
         <!-- Info Superior -->
         <div class="flex flex-col gap-x-small">
           <h3 class="heading-h400 text-primary m-0!">${labels.numberAvCreditsText}${avCreditsNumber}</h3>
-          <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} ${labels[refund] || typeRefund}</p>
+          ${showRefundType ? html`
+            <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} ${labels[refund] || typeRefund}</p>
+          ` : null}
           <div class="flex items-center gap-x-small">
             <span class="paragraph-p300 text-secondary">${labels.statusText}</span>
             <${StatusIcon} estado=${statusAvCredits} />

@@ -2738,17 +2738,25 @@
         "component": "richtext",
         "valueType": "string",
         "name": "headerTitle",
-        "label": "Header Title",
+        "label": "Título del Encabezado",
         "value": "",
-        "description": "Ticket title. Use the editor to make 'avianca' bold."
+        "description": "Título del tiquete. Usa el editor para poner 'avianca' en negrita."
       },
       {
         "component": "reference",
         "valueType": "string",
         "name": "headerIcon",
-        "label": "Header Icon",
+        "label": "Ícono del Encabezado",
         "multi": false,
-        "description": "Select the icon in SVG or PNG format."
+        "description": "Selecciona el ícono en formato SVG o PNG."
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "showRefundType",
+        "label": "Mostrar Tipo de Reembolso",
+        "value": false,
+        "description": "Activa o desactiva la visualización del tipo de reembolso en la tarjeta de detalles."
       }
     ]
   },

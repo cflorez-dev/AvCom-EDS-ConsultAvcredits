@@ -51,6 +51,10 @@ function mapBlockOptions(block) {
         const img = cell.querySelector('img');
         options.headerIconData = img ? { src: img.src, alt: img.alt || 'Header Icon' } : null;
         break;
+      case 2:
+        const booleanText = cell.textContent.trim().toLowerCase();
+        options.showRefundType = (booleanText === 'true' || booleanText === 'verdadero');
+        break;
       default: break;
     }
   });
@@ -103,6 +107,7 @@ const AvCreditsBannerWrapper = ({ aemProps, block }) => {
     <${AvCreditsBanner} 
       headerTitleHTML=${aemProps.headerTitleHTML}
       headerIconData=${aemProps.headerIconData}
+      showRefundType=${aemProps.showRefundType}
       currentBalance=${apiData.currentBalance}
       holderName=${capitalizeName(apiData.holderName)}
       avCreditsNumber=${apiData.avCreditsNumber}
