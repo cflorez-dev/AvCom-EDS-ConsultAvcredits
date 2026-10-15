@@ -345,7 +345,14 @@ export const ConsultAvCreditsForm = ({
         if (hasTransactionsBlock) {
           try {
             const resHistory = await txnHistory(encryptedVoucher);
-            const txnData = resHistory.body['response-txnhistory']?.cards || [];
+            const txnCards = resHistory.body['response-txnhistory']?.cards || [];
+            const txnData = txnCards.filter(card => {
+              const isGiftCardRedeem = card['transaction-type'] === 'GIFT CARD REDEEM';
+              const isNotPreAuth = !['PREAUTH SUCCESS', 'PREAUTH CANCEL'].includes(card['transaction-status']);
+              
+              return isGiftCardRedeem && isNotPreAuth;
+            });
+            
             hasTransactionsBlock.classList.remove('hidden');
             
             window.dispatchEvent(new CustomEvent('transaction-data-ready', { detail: txnData }));

@@ -58,6 +58,8 @@ export default async function decorate(block) {
 
   // Guardamos el texto en una constante simple
   const reservationText = getI18nLabel('transactionsHistory.reservationText', 'Código de reserva:');
+  const status_approved = getI18nLabel('transactionsHistory.status_approved', 'Aprobado');
+  const status_rejected = getI18nLabel('transactionsHistory.status_rejected', 'Rechazado');
 
   const rows = Array.from(block.children);
   const titleText = rows[0]?.textContent.trim() || 'Transacciones realizadas';
@@ -114,13 +116,14 @@ export default async function decorate(block) {
       
       const isSuccess = tx['transaction-status'].toLowerCase() === 'success';
       const statusIcon = isSuccess ? iconSuccess : iconError;
+      const statusText = isSuccess ? status_approved : status_rejected;
 
       const card = document.createElement('div');
       card.className = 'transaction-card';
       card.innerHTML = `
         <div class="tx-info-left">
           <p class="tx-default">${reservationText} <strong>${tx['reference-number']}</strong></p>
-          <p class="tx-details"><span>${formatDate(tx['transaction-date'])}</span> <span class="tx-line"></span> <span>${tx['transaction-status']}</span> <span class="tx-icon">${statusIcon}</span></p>
+          <p class="tx-details"><span>${formatDate(tx['transaction-date'])}</span> <span class="tx-line"></span> <span>${statusText}</span> <span class="tx-icon">${statusIcon}</span></p>
         </div>
         <div class="tx-info-right">
           <p class="tx-default"><strong>${formatCurrency(tx['transaction-amount'], tx.currency)}</strong></p>

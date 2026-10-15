@@ -2,13 +2,15 @@ import { getEnvironmentValues } from '/design-system/organisms/get-key-env/get-k
 import { httpClient } from '../../http-client.js';
 
 const CHANNEL = 'AVCOM';
-const [endPoint] = await getEnvironmentValues([
+const [endPoint, suffixBalance, suffixTxn] = await getEnvironmentValues([
   'AVC_ENVIRONMENT_API_URL',
+  'SUFFIX_BALANCEENQUIRY',
+  'SUFFIX_TXNHISTORY'
 ]);
 
 export const validateBalance = async (encryptedVoucher, encryptedPin) => {
 
-  const fetchUrl = `${endPoint}/balanceEnquiry`;
+  const fetchUrl = `${endPoint}/${suffixBalance}`;
   const requestData = {
     "balance-enquiry": {
       "channel": CHANNEL,
@@ -25,7 +27,7 @@ export const validateBalance = async (encryptedVoucher, encryptedPin) => {
 
 export const txnHistory = async (encryptedVoucher) => {
   
-  const fetchUrl = `https://api-payments-qa.avtest.ink/api_qwikcilver_in/txnhistory`;
+  const fetchUrl = `${endPoint}/${suffixTxn}`;
   const requestData = {
     "txn-history": {
       "channel": CHANNEL,
