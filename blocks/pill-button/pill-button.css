@@ -1,0 +1,73 @@
+/* Contenedor del bloque para alinear correctamente */
+.pill-button {
+  display: flex;
+  align-items: center;
+  margin: var(--padding-16) 0;
+}
+
+/* Base del botón */
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Separación entre íconos y texto */
+  padding: 0 16px; /* Padding lateral fijo de 16px */
+  border-radius: 999px; /* Forma de píldora redonda */
+  background-color: #ffffff;
+  color: #1a1a1a;
+  text-decoration: none;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid transparent;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05); /* Estado Default */
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* Variantes de Anatomía */
+.pill-btn--default {
+  height: 44px; /* Altura variante default */
+}
+
+.pill-btn--compact {
+  height: 32px; /* Altura variante compact */
+}
+
+/* Control de los íconos para que respeten la caja */
+.pill-btn__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.pill-btn__icon img,
+.pill-btn__icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Estados Interactivos */
+
+/* Hover */
+.pill-btn:hover {
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+/* Pressed (Active) */
+.pill-btn:active {
+  background-color: #f5f5f5; /* Fondo más oscuro o sombreado interno */
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+}
+
+/* Focus */
+.pill-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #007bff; /* Borde azul de focus */
+}

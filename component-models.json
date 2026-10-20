@@ -2732,6 +2732,66 @@
     ]
   },
   {
+    "id": "pill-button",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "label",
+        "label": "Texto del Botón",
+        "value": "Label",
+        "description": "Texto principal del botón."
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "link",
+        "label": "URL del enlace",
+        "value": "#",
+        "description": "Destino del botón."
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "variant",
+        "label": "Anatomía del Botón",
+        "value": "default",
+        "options": [
+          { "name": "Default (44px)", "value": "default" },
+          { "name": "Compact (32px)", "value": "compact" }
+        ]
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "showIconBefore",
+        "label": "Mostrar Icono Izquierdo (Before)",
+        "value": false
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "iconBefore",
+        "label": "Icono Izquierdo",
+        "multi": false
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "showIconAfter",
+        "label": "Mostrar Icono Derecho (After)",
+        "value": false
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "iconAfter",
+        "label": "Icono Derecho",
+        "multi": false
+      }
+    ]
+  },
+  {
     "id": "avcredits-banner",
     "fields": [
       {
