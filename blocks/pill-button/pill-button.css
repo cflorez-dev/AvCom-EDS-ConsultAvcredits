@@ -7,23 +7,21 @@
 
 /* Base del botón */
 .pill-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px; /* Separación entre íconos y texto */
-  padding: 0 16px; /* Padding lateral fijo de 16px */
-  border-radius: 999px; /* Forma de píldora redonda */
-  background-color: #ffffff;
-  color: #1a1a1a;
-  text-decoration: none;
-  font-family: inherit;
-  font-weight: 600;
-  font-size: 14px;
-  border: 1px solid transparent;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05); /* Estado Default */
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  box-sizing: border-box;
+    display: flex;
+    padding: 0 var(--medium, 16px);
+    justify-content: center;
+    align-items: center;
+    gap: var(--gap-8);
+    border-radius: var(--border-radius-x-large);
+    background: var(--bg-brand-secondary-default);
+    box-shadow: var(--shadows-axis-none, 0) var(--shadows-axis-none, 0) var(--shadows-blur-tiny, 6px) var(--shadows-spread-none, 0) var(--effect-shadow-light, rgba(90, 90, 90, 0.20));
+    color: var(--text-brand-secondary);
+    text-align: center;
+    font-size: var(--font-size-small);
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    letter-spacing: var(--letter-spacing-normal);
 }
 
 /* Variantes de Anatomía */
@@ -55,19 +53,19 @@
 
 /* Hover */
 .pill-btn:hover {
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-1px);
+    /* shadow/medium */
+    box-shadow: var(--shadows-axis-none, 0) var(--shadows-axis-medium, 2px) var(--shadows-blur-medium, 20px) 2px rgba(73, 73, 73, 0.25);
 }
 
 /* Pressed (Active) */
 .pill-btn:active {
-  background-color: #f5f5f5; /* Fondo más oscuro o sombreado interno */
-  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
-  transform: translateY(0);
+    background: #d9d9d9;
+    /* shadow/medium */
+    box-shadow: var(--shadows-axis-none, 0) var(--shadows-axis-medium, 2px) var(--shadows-blur-medium, 20px) 2px rgba(73, 73, 73, 0.25);
 }
 
 /* Focus */
 .pill-btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #007bff; /* Borde azul de focus */
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #1D9BF0; /* Borde azul de focus */
 }

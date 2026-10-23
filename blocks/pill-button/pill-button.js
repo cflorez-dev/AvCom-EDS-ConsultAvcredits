@@ -1,5 +1,11 @@
+import { h, render } from '@dropins/tools/preact.js';
+import htm from 'htm';
+import { resetPin } from '../../design-system/organisms/reset-pin/reset-pin.js'
+
+const html = htm.bind(h);
+
 export default function decorate(block) {
-  // 1. Extraer las filas configuradas desde AEM
+  // Extraer las filas configuradas desde AEM
   const rows = Array.from(block.children);
   const options = {};
 
@@ -19,15 +25,15 @@ export default function decorate(block) {
     }
   });
 
-  // 2. Limpiar el bloque original
+  // Limpiar el bloque original
   block.innerHTML = '';
 
-  // 3. Crear el elemento enlace/botón
+  // Crear el elemento enlace/botón
   const button = document.createElement('a');
   button.href = options.link;
   button.className = `pill-btn pill-btn--${options.variant}`;
 
-  // 4. Inyectar Icono Before si está habilitado
+  // Inyectar Icono Before si está habilitado
   if (options.showIconBefore && options.iconBeforeHTML) {
     const iconBeforeContainer = document.createElement('span');
     iconBeforeContainer.className = 'pill-btn__icon pill-btn__icon--before';
@@ -35,13 +41,13 @@ export default function decorate(block) {
     button.appendChild(iconBeforeContainer);
   }
 
-  // 5. Inyectar el Texto (Label)
+  // Inyectar el Texto (Label)
   const labelText = document.createElement('span');
   labelText.className = 'pill-btn__label';
   labelText.textContent = options.label || 'Label';
   button.appendChild(labelText);
 
-  // 6. Inyectar Icono After si está habilitado
+  // Inyectar Icono After si está habilitado
   if (options.showIconAfter && options.iconAfterHTML) {
     const iconAfterContainer = document.createElement('span');
     iconAfterContainer.className = 'pill-btn__icon pill-btn__icon--after';
@@ -49,6 +55,32 @@ export default function decorate(block) {
     button.appendChild(iconAfterContainer);
   }
 
-  // 7. Adjuntar el botón final al bloque
+  // Lógica de ruteo o evento
+  button.addEventListener('click', (event) => {
+    // Si el link empieza con "#"
+    if (options.link.startsWith('#') && options.link.length > 1) {
+      event.preventDefault(); // Evita que navegue o salte
+      
+      const actionId = options.link.substring(1); // ej: "resetPin"
+      
+      // Emitimos un evento global genérico para cualquier acción
+      window.dispatchEvent(new CustomEvent('trigger-action', { 
+        detail: { actionId } 
+      }));
+    }
+  });
+
+  // Adjuntar el botón final al bloque
   block.appendChild(button);
+
+  if (options.link === '#resetPin') {
+    const container = document.createElement('div');
+    container.className = 'reset-pin-wrapper';
+    block.appendChild(container);
+
+    render(
+      html`<${resetPin} labels=${{}} />`, 
+      container
+    );
+  }
 }
