@@ -17,3 +17,25 @@ header .avi-header-actions [data-button="true"]:focus:not(:focus-visible):not(:a
 .header-navbar-desktop, .header-navbar-mobile {
   display: none !important;
 }
+
+.shadow-\[0_4px_16px_rgba\(73\,73\,73\,0\.25\)\]{
+  box-shadow: var(--shadows-axis-none, 0) var(--shadows-axis-medium, 2px) var(--shadows-blur-medium, 20px) 2px rgba(73, 73, 73, 0.25);
+}
+
+/* Posicionamiento y tamaño del indicador (transparente por defecto) */
+.language-indicator::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 36px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+/* Color verde cuando el botón está seleccionado */
+.language-indicator.is-active::before {
+  background-color: var(--icon-accent-positive);
+}
