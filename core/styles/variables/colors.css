@@ -80,6 +80,7 @@
   --border-stroke-default: #d9d9d9;
   --border-stroke-dark: #b6b6b6;   /* Figma border/stroke/dark — marcadores/líneas de hitos */
   --border-stroke-focus: #1d9bf0;
+  --border-accent-positive: #1ea93c;
   
   /* Icon Colors */
   --icon-normal-primary: #1b1b1b;

@@ -141,7 +141,7 @@ export const CustomLanguageSearch = ({
         </${Button}>
 
         ${isDropdownOpen ? html`
-          <div class="absolute top-[calc(100%+8px)] right-0 w-[240px] bg-white rounded-[16px] shadow-[0_4px_16px_rgba(27,27,27,0.2)] py-[8px] z-[1000] overflow-hidden">
+          <div class="absolute top-[calc(100%+8px)] right-0 w-[312px] bg-white rounded-[16px] shadow-[0_4px_16px_rgba(73,73,73,0.25)] py-[8px] z-[1000] overflow-hidden">
             <div class="flex flex-col">
               ${allLanguages.map((lang) => {
                 const isSelected = lang.value === currentLanguage;
@@ -149,10 +149,10 @@ export const CustomLanguageSearch = ({
                 return html`
                   <button
                     key=${lang.value}
-                    class="flex items-center w-full text-left transition-colors cursor-pointer border-y-0 border-r-0 border-solid border-l-4 bg-transparent hover:bg-[#f5f5f5]"
+                    class=${`relative flex items-center w-full text-left transition-colors cursor-pointer bg-transparent hover:bg-[#f5f5f5] language-indicator ${isSelected ? 'is-active' : ''}`}
                     style=${{ 
                       padding: '12px 16px',
-                      borderLeftColor: isSelected ? '#0b9b3a' : 'transparent'
+                      minHeight: '48px'
                     }}
                     onClick=${() => handleLanguageSelect(lang.value)}
                     type="button"
@@ -163,14 +163,15 @@ export const CustomLanguageSearch = ({
                       fontSize: '16px',
                       fontFamily: 'var(--font-family-primary)',
                       fontWeight: isSelected ? '700' : '400',
-                      color: isSelected ? '#1b1b1b' : '#4a4a4a'
+                      color: '#1b1b1b',
+                      lineHeight: 'normal'
                     }}>
                       ${lang.label || lang.value}
                     </span>
                     
                     ${isSelected ? html`
-                      <svg class="ml-auto" style=${{ color: '#0b9b3a', width: '22px', height: '22px', flexShrink: '0' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                      <svg class="ml-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M8.59 15.58L4.42 11.41L3 12.82L8.59 18.41L20.59 6.41L19.18 5L8.59 15.58Z" fill-rule="evenodd" clip-rule="evenodd" fill="#1EA93C"/>
                       </svg>
                     ` : null}
                   </button>
