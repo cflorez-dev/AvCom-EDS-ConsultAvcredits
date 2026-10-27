@@ -150,7 +150,7 @@ export const AvCreditsBanner = ({
       <div class="avcredits-details bg-card border-border-stroke-default">
         
         <!-- Info Superior -->
-        <div class="flex flex-col gap-x-small">
+        <div class="flex flex-col gap-small">
           <h3 class="heading-h400 text-primary m-0!">${labels.numberAvCreditsText}${avCreditsNumber}</h3>
           ${showRefundType ? html`
             <p class="paragraph-p300 text-secondary m-0!">${labels.typeText} ${labels[refund] || typeRefund}</p>
