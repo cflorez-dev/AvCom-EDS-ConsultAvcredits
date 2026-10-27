@@ -44,9 +44,9 @@
     "fields": [
       {
         "component": "richtext",
+        "valueType": "string",
         "name": "text",
         "label": "Text",
-        "valueType": "string",
         "description": "Contenido de texto libre"
       }
     ]
