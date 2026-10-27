@@ -40,6 +40,18 @@
     ]
   },
   {
+    "id": "text",
+    "fields": [
+      {
+        "component": "richtext",
+        "name": "text",
+        "label": "Text",
+        "valueType": "string",
+        "description": "Contenido de texto libre"
+      }
+    ]
+  },
+  {
     "id": "title",
     "fields": [
       {
