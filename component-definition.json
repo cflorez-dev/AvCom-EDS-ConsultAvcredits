@@ -12,7 +12,6 @@
               "page": {
                 "resourceType": "core/franklin/components/text/v1/text",
                 "template": {
-                  "name": "Text",
                   "model": "text"
                 }
               }
