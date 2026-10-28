@@ -10,3 +10,7 @@
 .header-navbar-desktop, .header-navbar-mobile {
   display: none !important;
 }
+
+header .avi-language-search [data-button="true"] span {
+  line-height: normal;
+}
