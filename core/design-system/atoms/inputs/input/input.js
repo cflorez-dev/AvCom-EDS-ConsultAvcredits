@@ -87,33 +87,22 @@ export const Input = ({
 
   const isMembers = variant === 'members';
   const isInteractive = !disabled && !readonly;
-  // members variant: per "Reglas de uso" (Input obligatorio), a required
-  // field left empty after being touched (blurred) must switch to the error
-  // state and show a default required-field message.
+  
   const showRequiredError = isMembers && required && touched && !inputValue && isInteractive;
-  // Determine actual state
+  
   let actualState = state;
   if (disabled) actualState = 'disabled';
   else if (readonly) actualState = 'readonly';
   else if (showRequiredError) actualState = 'error';
   const resolvedHelperText = showRequiredError && !helperText ? 'Este campo es obligatorio.' : helperText;
 
-  // Determine if label should float (when has value or is focused)
   const shouldFloat = inputValue || isFocused;
 
-  // members variant: while unfloated, the label stands in for the value and
-  // must be rendered in-flow (not absolutely positioned) so its intrinsic
-  // width can drive the field's `w-fit` growth (see "Label corto y claro").
   const showInlineMembersLabel = isMembers && !!label && !shouldFloat;
-  // Unlike Select, Input does not get special readonly focus-ring handling
-  // under the members variant (see JSDoc note above) — always gate on
-  // isInteractive, matching the default (non-members) behavior.
   const showsFocusRing = isInteractive;
 
-  // Determine actual input type (toggle password visibility)
   const actualInputType = type === 'password' && showPassword ? 'text' : type;
 
-  // State-based styling classes - Figma specs, Tailwind only
   const stateClasses = {
     normal: 'outline outline-1 outline-[#969696] hover:outline-border-input-positive',
     success: 'outline outline-1 outline-border-input-positive',
@@ -138,7 +127,6 @@ export const Input = ({
     readonly: 'text-text-normal-secondary',
   };
 
-  // Listen for Tab key globally to detect keyboard navigation
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === 'Tab') {
@@ -156,7 +144,6 @@ export const Input = ({
     };
   }, []);
 
-  // Handle focus - show keyboard ring only if Tab was pressed
   const handleFocus = () => {
     setIsFocused(true);
     if (tabKeyPressedRef.current) {
@@ -166,7 +153,16 @@ export const Input = ({
   };
 
   // Handle blur
-  const handleBlur = () => {
+  const handleBlur = (e) => {
+    // Evitar que el estado se reinicie cuando el foco salta internamente del input oculto al principal
+    if (
+      e.relatedTarget && 
+      e.relatedTarget.tagName === 'INPUT' && 
+      e.currentTarget.closest('[data-name="input"]')?.contains(e.relatedTarget)
+    ) {
+      return;
+    }
+
     setIsFocused(false);
     setIsKeyboardFocused(false);
     if (isMembers && required) {
@@ -174,7 +170,6 @@ export const Input = ({
     }
   };
 
-  // Handle input change
   const handleChange = (e) => {
     if (isInteractive) {
       const newValue = e.target.value;
@@ -185,12 +180,10 @@ export const Input = ({
     }
   };
 
-  // Toggle password visibility
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
   };
 
-  // Handle suffix icon click
   const handleSuffixClick = () => {
     if (showPasswordToggle && type === 'password') {
       handlePasswordToggle();
@@ -199,7 +192,6 @@ export const Input = ({
     }
   };
 
-  // Handle container click (mousedown) to focus input without blurring it first
   const handleContainerMouseDown = (e) => {
     if (isInteractive) {
       if (e.target.tagName !== 'INPUT') {
@@ -212,12 +204,10 @@ export const Input = ({
     }
   };
 
-  // Update input value when prop changes
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
-  // Recuperar el foco automáticamente cuando el input principal reaparece
   useEffect(() => {
     if (isFocused && shouldFloat && inputRef.current) {
       inputRef.current.focus();
@@ -350,6 +340,8 @@ export const Input = ({
             onInput=${handleChange}
             onFocus=${handleFocus}
             onBlur=${handleBlur}
+            tabIndex=${shouldFloat ? -1 : 0}
+            aria-hidden=${shouldFloat ? 'true' : 'false'}
             class=${`
               bg-white
               ${shouldFloat ? 'sr-only' : `absolute inset-0 w-full h-full opacity-0 cursor-pointer font-['Red_Hat_Display']!`}
