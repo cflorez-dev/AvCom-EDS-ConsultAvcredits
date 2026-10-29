@@ -1,0 +1,256 @@
+/* stylelint-disable color-hex-length */
+/* stylelint-disable selector-class-pattern */
+
+/* Inner card wrapper — mirrors .accordion-group-item-inner */
+.accordion-simplified-item-inner {
+    background: var(--color-background-brand-primary-lighter, #fff);
+    border: 1px solid var(--color-border-brand-secondary-disable);
+    box-sizing: border-box;
+
+    /* Bug 7 (paridad con accordion-group): stacking context para que la sombra
+       de un item hovereado se pinte por encima de los items vecinos opacos
+       (que en la variante no-gap quedan pegados y la recortarían). */
+    position: relative;
+    z-index: 0;
+}
+
+/* Hover shadow — desktop only */
+@media (width >= 900px) {
+    .accordion-simplified-item-inner:hover,
+    .accordion-simplified-item-inner:has(.accordion-simplified-trigger:hover) {
+        box-shadow: 0 2px 20px 2px rgb(73 73 73 / 25%);
+
+        /* Bug 7: elevar el item hovereado sobre los vecinos para que la sombra
+           se vea completa en los 4 lados, en cualquier item (no solo el último). */
+        z-index: 1;
+    }
+}
+
+/* Trigger padding and transition — mirrors .accordion-group-trigger */
+.accordion-simplified-trigger {
+    padding: var(--spacing-x-large, 24px);
+    transition:
+        background-color var(--transition-fast, 150ms) var(--ease-in-out, ease-in-out),
+        box-shadow var(--transition-fast, 150ms) var(--ease-in-out, ease-in-out);
+}
+
+/* Open state: reduce bottom padding so content flows naturally */
+.accordion-simplified-item--open .accordion-simplified-trigger {
+    padding: var(--spacing-x-large, 24px) var(--spacing-x-large, 24px) var(--spacing-large, 20px);
+}
+
+.accordion-simplified-trigger:focus,
+.accordion-simplified-trigger:focus-visible,
+.accordion-simplified-trigger:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Panel animation — mirrors .accordion-group-panel */
+.accordion-simplified-panel {
+    transition: max-height var(--transition-slower, 500ms) var(--ease-in-out, ease-in-out);
+}
+
+/* Hidden state: keep in flow for animation but invisible — mirrors accordion-group-panel[hidden] */
+.accordion-simplified-panel[hidden] {
+    display: block; /* override hidden to allow animation */
+    max-height: 0;
+    visibility: hidden;
+}
+
+/* Content area padding — mirrors .accordion-group-content */
+.accordion-simplified-content {
+    padding: 0 var(--spacing-x-large, 24px) var(--spacing-x-large, 24px);
+    font-size: var(--paragraph-p300-size, 16px);
+    font-weight: var(--paragraph-p300-weight, 400);
+    letter-spacing: var(--paragraph-p300-letter-spacing, 0);
+    color: var(--text-normal-primary, #1b1b1b);
+}
+
+/* ul styles inside simplified accordion — mirrors accordion-group */
+.accordion-simplified-content ul {
+    line-height: var(--line-height-auto);
+}
+
+.accordion-simplified-content ul:not(.list-none) {
+    padding-left: 28px;
+    margin: 0;
+    list-style: disc;
+}
+
+.accordion-simplified-content ul.list-style-none,
+.accordion-simplified-content ul.list-none {
+    list-style: none !important;
+}
+
+/* ol styles — el preflight de Tailwind resetea `ol { list-style: none }`, así que
+   las listas numeradas del rich text perdían la numeración (solo `ul` se
+   restauraba). Restauramos `list-style: decimal` para que se vean los números. */
+.accordion-simplified-content ol {
+    line-height: var(--line-height-auto);
+}
+
+.accordion-simplified-content ol:not(.list-none) {
+    padding-left: 28px;
+    margin: 0;
+    list-style: decimal;
+}
+
+.accordion-simplified-content ol.list-style-none,
+.accordion-simplified-content ol.list-none {
+    list-style: none !important;
+}
+
+/* paragraph & list item spacing */
+.accordion-simplified-content p:first-child {
+    margin-top: 0; /* Bug 6: flush to top, keep inter-paragraph spacing below */
+}
+
+.accordion-simplified-content li,
+.accordion-simplified-content p {
+    font-style: normal;
+    font-weight: 400;
+    line-height: 150%; /* 24px */
+    margin: 0 0 var(--spacing-medium, 16px); /* Bug 6: inter-paragraph spacing */
+}
+
+.accordion-simplified-content li {
+    font-size: 16px;
+    margin-bottom: var(--spacing-x-small, 8px); /* Bug 6: tighter list spacing */
+}
+
+/* Bug 6: no trailing gap after the last block */
+.accordion-simplified-content li:last-child,
+.accordion-simplified-content p:last-child {
+    margin-bottom: 0;
+}
+
+.accordion-simplified-content li {
+    font-size: 16px;
+}
+
+/* link styles — mirrors accordion-group */
+.accordion-simplified-content a:any-link {
+    color: var(--color-text-link-informative-default, #177f8c);
+    font-weight: 400;
+    line-height: 150%;
+    text-decoration-line: underline;
+    text-decoration-style: solid;
+    text-decoration-skip-ink: auto;
+    text-decoration-thickness: auto;
+    text-underline-offset: auto;
+    text-underline-position: from-font;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.accordion-simplified-content a:any-link:hover {
+    color: var(--color-text-link-informative-active, #0e4c54);
+    font-weight: 700;
+}
+
+.accordion-simplified-content a:any-link:focus-visible {
+    outline: 2px solid var(--border-stroke-focus, #1d9bf0);
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Responsive tables — horizontal scroll when table overflows panel width.
+ * display:block is required: overflow on display:table elements is ignored by browsers.
+ * Internal table layout (rows/cells) is preserved; only the outer element becomes
+ * a scrollable block container. */
+.accordion-simplified-content table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    margin: 20px 0;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 12px;
+    border: 1px solid var(--Borders-and-dividers-mail-border-default, #d9d9d9);
+    background: #fff;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.accordion-simplified-content thead th {
+    padding: 24px 20px;
+    border-right: 1px dashed var(--Borders-and-dividers-mail-border-default, #d9d9d9);
+    background: var(--Background-mail-background-default-light, #fafafa);
+}
+
+.accordion-simplified-content thead th:last-child {
+    border-right: none;
+}
+
+.accordion-simplified-content tbody td {
+    padding: 2px 16px;
+    border-right: 1px dashed var(--Borders-and-dividers-mail-border-default, #d9d9d9);
+    background: var(--Background-mail-background-default-lighter, #fff);
+}
+
+.accordion-simplified-content tbody td:last-child {
+    border-right: none;
+}
+
+/* Print: expand all */
+@media print {
+    .accordion-simplified-panel {
+        max-height: none !important;
+        visibility: visible !important;
+    }
+
+    .accordion-simplified-panel[hidden] {
+        display: block !important;
+    }
+}
+
+/* ─── No-gap variant (item-spacing: none) ──────────────────────────────────────
+ * Items stack flush together into a single grouped card appearance.
+ * Intermediate borders and rounded corners are removed.
+ * Restaurado: el JS agrega .accordion-simplified-group--no-gap (item-spacing 'none')
+ * pero el CSS se había perdido en el auto-merge Phase 2 (gemelo de #994 accordion-group).
+ * ────────────────────────────────────────────────────────────────────────────── */
+
+/* Remove border-radius on all items */
+.accordion-simplified-group--no-gap .accordion-simplified-item-inner {
+    border-radius: 0;
+}
+
+/* First item: top radius only */
+.accordion-simplified-group--no-gap > div:first-child .accordion-simplified-item-inner {
+    border-radius: var(--border-radius-medium, 12px) var(--border-radius-medium, 12px) 0 0;
+}
+
+/* Last item: bottom radius only */
+.accordion-simplified-group--no-gap > div:last-child .accordion-simplified-item-inner {
+    border-radius: 0 0 var(--border-radius-medium, 12px) var(--border-radius-medium, 12px);
+}
+
+/* Single item (first AND last): full radius */
+.accordion-simplified-group--no-gap > div:only-child .accordion-simplified-item-inner {
+    border-radius: var(--border-radius-medium, 12px);
+}
+
+/* Collapse duplicate borders between stacked items.
+   Non-first items remove their top border; the previous item's bottom
+   border is replaced by an inset centered divider (24px inset each side)
+   so the separator does not span the full width. */
+.accordion-simplified-group--no-gap > div:not(:first-child) .accordion-simplified-item-inner {
+    border-top: none;
+}
+
+.accordion-simplified-group--no-gap > div:not(:last-child) .accordion-simplified-item-inner {
+    border-bottom: 0;
+    position: relative;
+}
+
+.accordion-simplified-group--no-gap > div:not(:last-child) .accordion-simplified-item-inner::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: calc(100% - 48px);
+    height: 1px;
+    background-color: var(--color-border-brand-secondary-disable, #e5e5e5);
+    pointer-events: none;
+}

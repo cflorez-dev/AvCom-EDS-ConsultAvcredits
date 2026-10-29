@@ -1,0 +1,406 @@
+/**
+ * Target filtering utility for AEM EDS blocks
+ * Provides centralized logic for country and language based content targeting
+ */
+
+import { getStoredCountry, getStoredLanguage } from '../services/header/language-country-selector.js';
+import { getSession } from '../services/members/session.store.js';
+import { normalizeTierKey } from '../../design-system/helpers/members-tier-theme.js';
+
+/**
+ * Country code mapper: converts 3-letter cookie codes to 2-letter ISO codes
+ * Cookie format (col, arg, mex) → ISO format (co, ar, mx) for targeting
+ */
+const COUNTRY_CODE_TO_ISO = {
+  col: 'co',
+  us: 'us',
+  mex: 'mx',
+  per: 'pe',
+  ecu: 'ec',
+  slv: 'sv',
+  cri: 'cr',
+  bra: 'br',
+  arg: 'ar',
+  bol: 'bo',
+  chl: 'cl',
+  can: 'ca',
+  gtm: 'gt',
+  hnd: 'hn',
+  nic: 'ni',
+  pan: 'pa',
+  pry: 'py',
+  dom: 'do',
+  esp: 'es',
+  gbr: 'gb',
+  ury: 'uy',
+  oth: 'ot',
+};
+
+/**
+ * Detect if running in Universal Editor / Author environment
+ * In author mode, targeting rules should be bypassed so content authors
+ * can see and edit all components regardless of their targeting configuration.
+ * @returns {boolean} True if in author/editor environment
+ */
+function isAuthorEnvironment() {
+  try {
+    // Primary: xwalk author environment flag (used by most blocks)
+    if (window.xwalk?.isAuthorEnv) {
+      return true;
+    }
+    // Secondary: hlx AUE flag
+    if (window.hlx?.aue) {
+      return true;
+    }
+    // URL-based detection: author hostname (e.g., author-p34631-e1321407.adobeaemcloud.com)
+    if (window.location.hostname.includes('author-')
+        || window.location.hostname.includes('adobeaemcloud.com')) {
+      return true;
+    }
+    // Fallback: AEM connection meta tag
+    if (document.querySelector('meta[name="urn:auecon:aemconnection"]')) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    return false;
+  }
+}
+
+/**
+ * Legacy targeting-value aliases. The Universal Editor model historically offered
+ * Spain with the value 'eu' (a stale "Europe" code that never existed in the POS
+ * catalog — Spain's real POS code is 'es'). Content authored before the model was
+ * fixed still carries 'eu', so we normalize it to 'es' at read time. Without this,
+ * every Spain-targeted block stays hidden because a real Spain visitor's cookie is
+ * 'es' and 'eu' matches nothing.
+ */
+const LEGACY_TARGET_COUNTRY_ALIASES = {
+  eu: 'es',
+};
+
+/**
+ * Parse target values from config (supports both array and comma-separated string formats)
+ * @param {string|Array<string>} targetValue - Target value from block config
+ * @returns {Array<string>} Array of lowercase, trimmed target values
+ */
+function parseTargetValues(targetValue) {
+  if (!targetValue) {
+    return [];
+  }
+
+  const normalize = (v) => {
+    const code = String(v).trim().toLowerCase();
+    return LEGACY_TARGET_COUNTRY_ALIASES[code] || code;
+  };
+
+  // If already an array (multiselect returns array)
+  if (Array.isArray(targetValue)) {
+    return targetValue.map(normalize).filter(Boolean);
+  }
+
+  // If string (comma-separated or single value)
+  if (typeof targetValue === 'string') {
+    return targetValue
+      .split(',')
+      .map(normalize)
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
+/**
+ * Get current user's country from cookies
+ * @returns {string} Current country code in lowercase (e.g., 'co', 'us') or empty string
+ */
+function getCurrentCountry() {
+  try {
+    const cookieCountry = getStoredCountry();
+    if (!cookieCountry) {
+      return '';
+    }
+
+    // Convert cookie format (col, arg, mex) to ISO format (co, ar, mx)
+    const countryLower = cookieCountry.toLowerCase();
+    const isoCode = COUNTRY_CODE_TO_ISO[countryLower];
+
+    return isoCode || countryLower; // Fallback to original if not in map
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[target-filter] Error getting current country:', error);
+    return '';
+  }
+}
+
+/**
+ * Get current user's language from cookies or document
+ * @returns {string} Current language code in lowercase (e.g., 'es', 'en') or 'en' as fallback
+ */
+function getCurrentLanguage() {
+  try {
+    const language = getStoredLanguage();
+    if (language) {
+      return language.toLowerCase();
+    }
+
+    // Fallback to document language
+    const docLang = document.documentElement.lang;
+    return docLang ? docLang.toLowerCase() : 'en';
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('[target-filter] Error getting current language:', error);
+    return 'en';
+  }
+}
+
+/**
+ * Get current member's tier (kebab key) from the session signal (sync).
+ * Returns '' for anonymous / no tier (so tier-targeted content is not filtered out
+ * for users without a tier — same fail-soft as country with no cookie).
+ * @returns {string} normalized tier key (e.g. 'gold', 'silver') or '' if none
+ */
+function getCurrentTier() {
+  try {
+    const tier = getSession()?.user?.tier;
+    return tier ? normalizeTierKey(tier) : '';
+  } catch (error) {
+    return '';
+  }
+}
+
+/**
+ * Check if content should be shown based on targeting rules.
+ * @param {string|Array<string>} targetCountries - Target countries
+ *   (comma-separated string or array)
+ * @param {string|Array<string>} targetLanguages - Target languages
+ *   (comma-separated string or array)
+ * @param {string|Array<string>} [targetTiers] - Target member tiers (1263924, Sub B).
+ *   Optional/back-compatible: callers passing only 2 args are unaffected.
+ * @returns {boolean} True if content should be shown, false if hidden
+ */
+export function shouldShowByTargeting(targetCountries, targetLanguages, targetTiers) {
+  // In author mode, always show content so editors can manage all components
+  if (isAuthorEnvironment()) {
+    return true;
+  }
+
+  const countries = parseTargetValues(targetCountries);
+  const languages = parseTargetValues(targetLanguages);
+  const tiers = parseTargetValues(targetTiers);
+
+  // If no targeting is configured, show to everyone
+  if (countries.length === 0 && languages.length === 0 && tiers.length === 0) {
+    return true;
+  }
+
+  const currentCountry = getCurrentCountry();
+  const currentLanguage = getCurrentLanguage();
+  const currentTier = getCurrentTier();
+
+  // Country filtering: only validate if both config AND cookie exist
+  if (countries.length > 0 && currentCountry) {
+    if (!countries.includes(currentCountry)) {
+      return false;
+    }
+  }
+
+  // Language filtering: only validate if config exists
+  if (languages.length > 0 && currentLanguage) {
+    if (!languages.includes(currentLanguage)) {
+      return false;
+    }
+  }
+
+  // Tier filtering (1263924): only validate if both config AND a current tier exist.
+  // Anonymous / no-tier users are not filtered (fail-soft, mirrors country).
+  if (tiers.length > 0 && currentTier) {
+    if (!tiers.includes(currentTier)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Filter array of items by their targeting configuration
+ * @param {Array<Object>} items - Array of items to filter
+ * @param {string} countryField - Name of the country targeting field
+ * @param {string} langField - Name of the language targeting field
+ * @param {string} [tierField] - Name of the tier targeting field (1263924, Sub B)
+ * @returns {Array<Object>} Filtered array with only items that should be shown
+ */
+export function filterItemsByTargeting(
+  items,
+  countryField = 'targetCountries',
+  langField = 'targetLanguages',
+  tierField = 'targetTiers',
+) {
+  if (!Array.isArray(items)) {
+    return [];
+  }
+
+  // In author mode, return all items without filtering
+  if (isAuthorEnvironment()) {
+    return items;
+  }
+
+  return items.filter((item) => {
+    const targetCountries = item[countryField];
+    const targetLanguages = item[langField];
+    const targetTiers = item[tierField];
+    return shouldShowByTargeting(targetCountries, targetLanguages, targetTiers);
+  });
+}
+
+/**
+ * Hide a block and collapse its wrapper to avoid empty spaces
+ * Only collapses the immediate wrapper, not the entire section
+ * This prevents hiding other blocks that should be visible
+ * @param {Element} block - The block element to hide
+ */
+export function hideBlockWithSection(block) {
+  if (!block) {
+    return;
+  }
+
+  // Hide the block itself
+  block.classList.add('hidden');
+  block.style.display = 'none';
+
+  // Collapse the immediate parent wrapper (usually div.block-wrapper or similar)
+  const wrapper = block.parentElement;
+  if (wrapper && wrapper !== document.body && !wrapper.classList.contains('section')) {
+    wrapper.style.display = 'none';
+    wrapper.style.padding = '0';
+    wrapper.style.margin = '0';
+    wrapper.style.height = '0';
+    wrapper.style.overflow = 'hidden';
+  }
+
+  // Check if section should be collapsed (only if all blocks are hidden)
+  const section = block.closest('.section');
+  if (section) {
+    const visibleBlocks = section.querySelectorAll('.block:not(.hidden)');
+    if (visibleBlocks.length === 0) {
+      // All blocks in section are hidden, collapse the section
+      section.style.display = 'none';
+      section.style.padding = '0';
+      section.style.margin = '0';
+      section.style.height = '0';
+      section.style.overflow = 'hidden';
+    }
+  }
+}
+
+// Debounce flag so the orphan-placeholder collapse is coalesced across the
+// independent applySectionTargeting() calls of every section on the page.
+let marqueeCollapseScheduled = false;
+
+/**
+ * Collapse the CLS-reservation marquesina placeholder when it has been orphaned.
+ *
+ * `bootstrapMarqueeHeight()` (scripts.js) reserves `--marquee-height` and a
+ * `.marquesina-global-container` placeholder as soon as a `.marquesina.block`
+ * exists in the DOM, to prevent layout shift. Normally the block's decorate()
+ * either renders into that placeholder or, when it does not match the user,
+ * collapses it via scheduleMarquesinaFinalize(). But when the marquesina's
+ * SECTION is hidden by targeting, the section is never loaded, decorate() never
+ * runs, and the empty 55px placeholder is left behind as a permanent gap above
+ * the sticky header (visible on scroll). This collapses that orphan.
+ *
+ * Coalesced + debounced because several sections may be hidden in the same tick;
+ * the re-check on fire ensures we only collapse once EVERY marquesina is gone.
+ */
+function scheduleMarqueePlaceholderCollapse() {
+  if (marqueeCollapseScheduled) return;
+  marqueeCollapseScheduled = true;
+  setTimeout(() => {
+    marqueeCollapseScheduled = false;
+    const container = document.querySelector('.marquesina-global-container');
+    // A marquesina already rendered into the shared slot; keep its reservation.
+    if (container && container.querySelector('[data-name="marquesina"]')) return;
+    // Another marquesina is still live (its section was not hidden by targeting)
+    // and may yet render into the shared slot; do not collapse prematurely.
+    const liveMarquesina = [...document.querySelectorAll('.marquesina.block, .marquesina')]
+      .some((b) => {
+        const sec = b.closest('.section');
+        return sec
+          && !sec.classList.contains('hidden-by-targeting')
+          && sec.dataset.sectionStatus !== 'hidden';
+      });
+    if (liveMarquesina) return;
+    if (container) container.remove();
+    document.documentElement.style.setProperty('--marquee-height', '0px');
+  }, 150);
+}
+
+/**
+ * Apply targeting rules to a section based on metadata
+ * This is meant to be called during section decoration
+ * @param {Element} section - The section element
+ * @param {Object} meta - Section metadata object from readBlockConfig
+ * @returns {boolean} True if section should be shown, false if hidden
+ */
+export function applySectionTargeting(section, meta) {
+  if (!section || !meta) {
+    return true;
+  }
+
+  // In author mode, always show
+  if (isAuthorEnvironment()) {
+    return true;
+  }
+
+  // Get targeting values (support both formats)
+  const targetCountries = meta['target-countries'] || meta.targetCountries;
+  const targetLanguages = meta['target-languages'] || meta.targetLanguages;
+
+  // If no targeting is configured, show the section
+  if (!targetCountries && !targetLanguages) {
+    return true;
+  }
+
+  // Check if section should be shown
+  const shouldShow = shouldShowByTargeting(targetCountries, targetLanguages);
+
+  if (!shouldShow) {
+    // Hide section completely
+    section.style.display = 'none';
+    section.style.padding = '0';
+    section.style.margin = '0';
+    section.style.height = '0';
+    section.style.overflow = 'hidden';
+    section.classList.add('hidden-by-targeting');
+    section.dataset.sectionStatus = 'hidden';
+
+    // If the hidden section holds a marquesina, its decorate() will never run, so
+    // the CLS placeholder reserved by bootstrapMarqueeHeight() would otherwise be
+    // orphaned as a permanent gap above the sticky header. Collapse it (only once
+    // no other marquesina remains live).
+    if (section.querySelector('.marquesina.block, .marquesina')) {
+      scheduleMarqueePlaceholderCollapse();
+    }
+  }
+
+  return shouldShow;
+}
+
+/**
+ * Check if content should be shown based on legacy field names (backward compatibility)
+ * Supports new (target-countries, target-languages) and old (targetMarkets, targetLanguages)
+ * @param {Object} config - Configuration object with target fields
+ * @returns {boolean} True if content should be shown, false if it should be hidden
+ */
+export function shouldShowByTargetingLegacy(config) {
+  if (!config || typeof config !== 'object') {
+    return true;
+  }
+
+  // New format (multiselect): target-countries, target-languages
+  const targetCountries = config['target-countries'] || config.targetCountries || config.targetMarkets;
+  const targetLanguages = config['target-languages'] || config.targetLanguages;
+
+  return shouldShowByTargeting(targetCountries, targetLanguages);
+}

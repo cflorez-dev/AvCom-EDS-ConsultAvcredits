@@ -1,0 +1,602 @@
+/*
+ * Copyright 2020 Adobe. All rights reserred.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
+
+:root {
+  /* colors */
+  --background-color: white;
+  --light-color: #f8f8f8;
+  --dark-color: #505050;
+  --text-color: #131313;
+  --text-color-secondary: #1B1B1B;
+  --link-color: #3b63fb;
+  --link-hover-color: #1d3ecf;
+  --link-color-secondary: #0190a0;
+  --link-hover-color-secondary: #0190a0;
+
+  /* fonts */
+  --body-font-family: 'Red Hat Display', red-hat-display-fallback, sans-serif;
+  --heading-font-family: 'Red Hat Display', red-hat-display-fallback, sans-serif;
+
+  /* body sizes */
+  --body-font-size-m: 22px;
+  --body-font-size-s: 19px;
+  --body-font-size-xs: 17px;
+
+  /* heading sizes — fluid clamp() (CU-226/CU-227) */
+  --heading-font-size-xxl: clamp(2rem, 1.43vw + 1.7143rem, 3rem);     /* h1: 32px → 48px */
+  --heading-font-size-xl:  clamp(1.5rem, 0.71vw + 1.3571rem, 2rem);   /* h2: 24px → 32px */
+  --heading-font-size-l:   clamp(1.25rem, 0.71vw + 1.1071rem, 1.75rem); /* h3: 20px → 28px */
+  --heading-font-size-m:   clamp(1.125rem, 0.54vw + 1.0179rem, 1.5rem); /* h4: 18px → 24px */
+  --heading-font-size-s:   clamp(1rem, 0.36vw + 0.9286rem, 1.25rem);  /* h5: 16px → 20px */
+  --heading-font-size-xs:  clamp(0.875rem, 0.36vw + 0.8036rem, 1.125rem); /* h6: 14px → 18px */
+
+  /* nav height */
+  --nav-height: 76px;
+}
+
+/* fallback fonts */
+@font-face {
+  font-family: red-hat-display-fallback;
+  size-adjust: 100%;
+  ascent-override: 102%;
+  descent-override: 30%;
+  line-gap-override: 0%;
+  src: local('Arial');
+}
+
+@media (width >= 900px) {
+  :root {
+    /* body sizes */
+    --body-font-size-m: 18px;
+    --body-font-size-s: 16px;
+    --body-font-size-xs: 14px;
+    /* heading sizes handled by clamp() — no breakpoint overrides needed (CA6) */
+  }
+}
+
+html {
+  overflow-x: clip;
+
+  /* Reserve scrollbar column always so viewport width stays constant across
+     scroll-driven layout changes. Without this, on Windows/Linux (classic
+     scrollbars that occupy layout space) the header + megamenu jitter
+     horizontally when the header transitions from 76px → 50px on scroll and
+     content briefly slips under the vertical-overflow threshold, toggling the
+     scrollbar and shifting viewport width. macOS (overlay scrollbars) is not
+     affected which is why the bug only reproduces on Windows. */
+  scrollbar-gutter: stable;
+}
+
+body {
+  display: none;
+  margin: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: var(--body-font-family);
+  font-size: var(--body-font-size-m);
+  line-height: 1.6;
+  overflow-x: clip;
+}
+
+body.appear {
+  display: block;
+}
+
+body.loader-curtain-active header,
+body.loader-curtain-active footer,
+body.loader-curtain-active .marquesina-global-container {
+  visibility: hidden;
+}
+
+/* Main stays painted (behind the loader's fixed overlay) so the browser
+   counts its background-image for LCP immediately, instead of waiting
+   until the loader dismisses.  The loader's position:fixed + z-index:9999
+   + solid background already hides main visually from the user. */
+
+/* Critical loader positioning — must be in render-blocking CSS so the loader
+   overlays everything from the first frame, before cms-loader.css loads. */
+.section.cms-loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: none;
+  padding: 0 !important;
+  margin: 0 !important;
+  background-color: var(--color-gray-50);
+}
+
+/* Center loader content vertically and horizontally before cms-loader.css loads.
+   aem.js wraps the block in .cms-loader-wrapper — it needs height to pass through. */
+.section.cms-loader-container .cms-loader-wrapper {
+  height: 100%;
+  width: 100%;
+}
+
+.section.cms-loader-container .cms-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  height: 100%;
+  width: 100%;
+}
+
+.section.cms-loader-container .cms-loader > div:first-child,
+.section.cms-loader-container .cms-loader > div:first-child img,
+.section.cms-loader-container .cms-loader > div:first-child picture {
+  width: 100px;
+  max-width: 100px;
+  height: auto;
+}
+
+header {
+  height: var(--nav-height);
+  position: relative;
+  z-index: 100;
+}
+
+header .header,
+footer .footer {
+  visibility: hidden;
+}
+
+header .header[data-block-status="loaded"],
+footer .footer[data-block-status="loaded"] {
+  visibility: visible;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0.8em;
+  margin-bottom: 0.25em;
+  font-family: var(--heading-font-family);
+  font-weight: 600;
+  line-height: 1.25;
+  scroll-margin: 40px;
+}
+
+h1 { font-size: var(--heading-font-size-xxl); }
+h2 { font-size: var(--heading-font-size-xl); font-weight: 700; line-height: normal; color: var(--text-color-secondary); margin-top: 0; margin-bottom: 0; }
+h3 { font-size: var(--heading-font-size-l); }
+h4 { font-size: var(--heading-font-size-m); }
+h5 { font-size: var(--heading-font-size-s); }
+h6 { font-size: var(--heading-font-size-xs); }
+p  { font-size: clamp(0.875rem, 0.36vw + 0.765rem, 1rem); }
+
+/* context-h1: production utility — h2 styled as h1 visual size */
+.section.text-center h2 {
+  font-size: var(--heading-font-size-xl);
+  line-height: 1.25;
+}
+
+p,
+dl,
+ol,
+ul,
+pre,
+blockquote {
+  margin-top: 0.8em;
+  margin-bottom: 0.25em;
+}
+
+code,
+pre {
+  font-size: var(--body-font-size-s);
+}
+
+pre {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: var(--light-color);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+/* links */
+a:any-link {
+  /* color: var(--link-color);
+  text-decoration: none;
+  overflow-wrap: break-word; */
+}
+
+main > .section {
+  /* 1248px is the max CONTENT width; +64px leaves room for the 32px external
+     lateral margin on each side (VSTS 1282504). */
+  max-width: calc(var(--container-xl) + 64px);
+  margin: auto;
+  padding: 32px var(--main-section-div-padding, 16px);
+}
+
+main > .section:first-of-type {
+  margin-top: 0;
+}
+
+main.has-custom-bg:not(.has-background-image) {
+  background: var(--page-bg);
+}
+
+/* Page background coexists with CMS Background Image (CA3): the author's
+   solid color goes to background-color (visible around/under transparent
+   image areas) and a gradient goes as a layer below the image. */
+main.has-custom-bg.has-background-image {
+  background-color: var(--page-bg-color, var(--bg-fallback-color, transparent));
+}
+
+main > .section.has-custom-bg,
+main > .mosaic-v2-mobile-container.has-custom-bg {
+  position: relative;
+  isolation: isolate;
+}
+
+main > .section.has-custom-bg::before,
+main > .mosaic-v2-mobile-container.has-custom-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  background: var(--section-bg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* mosaic-v2 carousel sets overflow:clip on the section to hide off-screen
+   slides. When `has-nav-padding` is set (autoplay/arrows), slide clipping is
+   done by the inner `.mosaic-v2-clip` wrapper, so the section's overflow is
+   redundant. Override it so the full-bleed bg pseudo-element is not clipped. */
+main > .section.has-custom-bg.mosaic-v2-container.has-nav-padding {
+  overflow: visible;
+}
+
+/* Members Elite header full-bleed (refinamiento 2026-07-14, puntos 1.3/2.1):
+   el gradiente por tier se pinta en un ::before de 100vw (mismo patrón
+   has-custom-bg de arriba) para que el color llegue a los bordes del viewport
+   aunque `main > .section` limite el contenido a 1248px. El organism
+   (members-elite-header.js) entrega el gradiente en la CSS var inline
+   `--elite-header-bg`; el contenido interior conserva el ancho del section. */
+.members-elite-header {
+  position: relative;
+  isolation: isolate;
+}
+
+.members-elite-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  left: calc(50% - 50vw);
+  width: 100vw;
+  background: var(--elite-header-bg);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Cóndor decorativo del header elite (refinamiento 2026-07-15, coords exactas de
+   Figma verificadas vía MCP 2026-07-16). El componente `EliteHeaderCondor` rinde
+   un <img> del vector `decorative-vector.svg` (pluma fina, el MISMO del drawer
+   hero). Tamaño y posición van acá (no en clases Tailwind arbitrarias, que
+   tw:watch no compila sin correr). En TODOS los breakpoints el vector es 117×131.
+   - Mobile (≤767): Figma node 765:64994 → `right:-16px` y `top:-3px` (el -16
+     cancela el padding lateral del section para que el cóndor llegue al borde
+     de pantalla; -3px lo eleva sobre el top del hero).
+   - Tablet (768-1023): Figma node 765:65047 → `right:352px` y `top:-45px`
+     (posición absoluta relativa al header — el cóndor queda anclado ARRIBA
+     y desplazado 352px desde la derecha, justo a la izquierda de la balance box).
+   - Desktop (≥1024): 117×131 anclado ABAJO (bottom:0). El ancla es Figma
+     `1059:65464` (Greeting @1440): vector x=910 w=117 → right edge en x=1027
+     del CANVAS de 1440, es decir 413px desde el borde DERECHO DEL VIEWPORT.
+     El header está dentro del section (max-width 1312, content 1248 centrado)
+     así que la CSS `right` (relativa al padre) NO coincide con `413px from viewport`.
+     Fórmula: `(100% - 100vw) / 2` traslada el frame al viewport (negativo cuando
+     el header es más angosto que el viewport). `min(...)` escala proporcional al
+     ancho de viewport (100vw × 413/1440 ≈ 28.68vw) desde 1024 hasta 1440, y capa
+     en 413px para viewports > 1440. */
+.members-elite-header [data-name='members-elite-header-condor'] {
+  position: absolute;
+  top: -3px;
+  right: -16px;
+  width: 117px;
+  height: 131px;
+  display: block;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .members-elite-header [data-name='members-elite-header-condor'] {
+    top: 32px;
+    right: 352px;
+    width: 117px;
+    height: 131px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .members-elite-header [data-name='members-elite-header-condor'] {
+    top: auto;
+    bottom: 0;
+    right: calc((100% - 100vw) / 2 + min(calc(100vw * 413 / 1440), 413px));
+    width: 117px;
+    height: 131px;
+  }
+}
+
+/*
+    Sheet de contenido gris del members-elite (refinamiento 2026-07-15). Fondo
+    #F1F1F1 full-bleed (100vw, mismo patrón que el hero) detrás de tabs + paneles.
+    (Más claro que el contenedor #DFDFDF del segmented control, para que ese óvalo
+    se distinga sobre el sheet.)
+    `z-index:1` crea contexto de apilamiento para que el ::before (z-index:-1)
+    quede por ENCIMA del hero en el solape (si no, el hero lo taparía). El
+    `margin-top:-32px` cancela el gap del flex-col (lg:gap-8 = 32px → a ras en
+    desktop; gap-6 = 24px → 8px de solape en ≤1023). `padding-top` da aire a los
+    tabs por debajo del borde del hero. Las esquinas superiores del ::before se
+    redondean 16px (Figma 1056:32884 — efecto sheet montando sobre el hero,
+    aplica en mobile y desktop).
+*/
+.members-elite-sheet {
+  position: relative;
+  z-index: 1;
+  margin-top: -32px;
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+@media (max-width: 767px) {
+  .members-elite-sheet {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+    .members-elite-sheet {
+        margin-top: 0px;
+        padding-top: 0;
+    }
+}
+
+/* El global `main > .section { padding: 32px … }` dejaba 32px de padding-bottom
+   BLANCO debajo del sheet (entre el último panel y el footer). Lo anulamos en
+   esta sección y ese espacio lo aporta ahora el `padding-bottom` gris del sheet
+   → el gris del sheet llega hasta el footer sin franja blanca. */
+main > .section.members-elite-container {
+  padding-bottom: 0;
+}
+
+.members-elite-sheet::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  bottom: 0;
+
+  /* Full-bleed vía left+right = calc(50% - 50vw) (NO `width: 100vw`): con ambos
+     seteados el ancho es el del viewport EXACTO. `width: 100vw` sobrepasaba el
+     ancho visible (por `scrollbar-gutter: stable` + `overflow-x: clip` en html),
+     dejando las esquinas superiores redondeadas FUERA de lo visible → se veían
+     cuadradas. Así los corners caen justo en el borde del viewport y se ven. */
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  background: #f1f1f1;
+  z-index: -1;
+  pointer-events: none;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .members-elite-sheet::before {
+    top: -40px;
+  }
+}
+
+/* section metadata */
+
+/* Invariante de layout (foundations "Márgenes y ancho de contenido"): el margen
+   lateral (32/24/16px) es el espacio MINIMO entre el contenido y el borde del
+   viewport y lo pone `main > .section`. Ningun estilo de seccion debe declarar
+   padding horizontal: los estilos que solo quieren tocar el eje vertical usan
+   `padding-block`, y la UNICA forma de renunciar al margen lateral es la clase
+   `no-padding-x`, que existe para eso. */
+main .section.light,
+main .section.highlight {
+  background-color: var(--light-color);
+
+  /* `margin: 0` cancelaba tambien el `margin: auto` de la seccion y la
+     descentraba; `padding: 40px 0` borraba el margen lateral (VSTS 1282504). */
+  margin-block: 0;
+  padding-block: 40px;
+}
+
+main .section.center-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+main .section.center-content > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* TODO: remove style, is only for client meet 17-12 - START */
+.section.center-content:has(.default-content-wrapper) {
+  /* Solo el eje vertical. Con `padding: 0` esta regla (0,3,0) ganaba a
+     `main > .section` y a `padding-title`, y desde que 1282504 dio margen
+     lateral a todas las secciones dejaba el contenido 32px por fuera del resto
+     (o pegado al borde entre 1248 y 1311px). La media query de 1247px reponia
+     el padding lateral y ya no hace falta. */
+  padding-block: 0;
+}
+/* TODO: remove style, is only for client meet 17-12 - END */
+
+.section.layout-1-2-992 > div {
+  display: flex;
+  flex-direction: column;
+}
+
+main div.section.padding-title {
+  /* Solo cancela el padding vertical del `main > .section`; el horizontal lo
+     sigue poniendo la seccion con su variable responsive (16/24/32px). Antes
+     redeclaraba el lateral aqui, y al ser mas especifica (0,2,2) pisaba el
+     `no-padding-x` del autor (0,2,0): una seccion con ambos se quedaba con
+     margen lateral pese a haber pedido lo contrario. */
+  padding-block: 0;
+  h1,h2,h3,h4,h5,h6 {
+    margin: 0;
+  }
+}
+
+.section.padding-bottom-40 {
+  padding-bottom: 40px;
+}
+.section.no-padding-top {
+  padding-top: 0;
+}
+
+.section.no-padding-bottom {
+  padding-bottom: 0;
+}
+
+.section.no-padding-y {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Unica forma sancionada de renunciar al margen lateral de la seccion: el autor
+   pone el estilo "No padding x". Sin ella la invariante de arriba no tendria
+   valvula de escape y las secciones a sangre tendrian que anular el padding por
+   CSS de bloque. */
+.section.no-padding-x {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Desktop >= 992px */
+@media (min-width: 992px) {
+  .section.layout-1-2-992 {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(320px, 1fr);
+    grid-auto-rows: auto;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* first direct child div -> left column, span 2 rows */
+  .section.layout-1-2-992 > div:first-child {
+    grid-column: 1;
+    grid-row: 1 / 3;
+  }
+
+  /* all other direct child divs -> right column, starting from row 1 */
+  .section.layout-1-2-992 > div:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .section.layout-1-2-992 > div:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .section.layout-1-2-992 > div:nth-child(4) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+
+  .section.layout-1-2-992 > div:nth-child(n+5) {
+    grid-column: 2;
+  }
+}
+
+/* Responsive padding-inline breakpoints — mobile-first (solo min-width)
+   para evitar huecos en Windows con DPR fraccional (125/150/175%) o con
+   scrollbar-gutter reservado, donde el innerWidth queda en valores tipo
+   1023.2px y max-width:1023px + min-width:1024px dejan un rango sin match.
+   La cascada de min-width se encarga del override; ya no hay gaps posibles. */
+
+/* Tablet: >= 768px → 24px */
+@media (min-width: 768px) {
+    :root {
+        --main-section-div-padding: 24px;
+    }
+
+    main > .section > div {
+        box-sizing: content-box;
+    }
+}
+
+/* Desktop: >= 1024px → 32px
+   1248px es un max-CONTENT width, no un breakpoint (VSTS 1282504): el
+   margen lateral externo se mantiene en 32px para todo viewport >= 1024px. */
+@media (min-width: 1024px) {
+    :root {
+        --main-section-div-padding: 32px;
+    }
+}
+
+/* Gate de zona privada Members (1263924): cortina SYNC mientras se resuelve/redirige la
+   sesión de un anónimo en una ruta del Portal. La activa gateMembersPortalEarly()
+   (scripts.js) añadiendo `members-gate-pending` a <html>, ANTES de pintar, para que el
+   contenido del perfil no sea visible. El redirect al login lo hace session.service;
+   si no puede arrancar, el guard cae al home. Va en CSS eager para aplicar al 1er frame.
+   Restaurado: se perdió en el commit ebd73fb9; el JS sigue agregando la clase. */
+html.members-gate-pending main {
+  visibility: hidden;
+}
+
+html.members-gate-pending body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: var(--background-color);
+}
+
+html.members-gate-pending body::after {
+  content: "";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  z-index: 10001;
+  border: 3px solid var(--light-color);
+  border-top-color: var(--text-color-secondary);
+  border-radius: 50%;
+  animation: members-gate-spin 0.8s linear infinite;
+}
+
+@keyframes members-gate-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.members-gate-pending body::after { animation: none; }
+}

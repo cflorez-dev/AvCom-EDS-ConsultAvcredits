@@ -1,0 +1,161 @@
+/* Destination Details Block */
+
+section.section[data-section-type='hero-destinations-detail'] {
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section[data-section-type='hero-destinations-detail'] .cms-rich-text-wrapper {
+  max-width: 448px;
+
+  h1 {
+    margin: 0;
+  }
+
+  p {
+    margin: 16px auto 0;
+  }
+}
+
+/* Smartvel section inherits the 1248px max-width from the parent section
+   so it stays aligned with the rest of the page content. */
+
+.destination-details-container {
+  width: 100%;
+}
+
+.destination-details h3, .destination-details p {
+    margin: 0;
+}
+
+.destination-details h3 {
+    font-weight: 700;
+}
+
+.destination-details h4 {
+    margin-bottom: 16px;
+}
+
+/* All headings in airport tab get bottom spacing to separate from following content */
+.destination-details .airport h3 {
+    margin-bottom: 16px;
+}
+
+/* Section subheading that follows a paragraph — adds divider and H4-style sizing */
+.destination-details .airport p + h3 {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border-stroke-default);
+}
+
+/* When <hr> is already present before the subheading, remove the duplicate border */
+.destination-details .airport hr + h3 {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* h4 variant: same treatment for content that uses h4 as subheading */
+.destination-details .airport h4,
+.destination-details .airport p + h4 {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border-stroke-default);
+}
+
+.destination-details .airport hr + h4 {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.destination-details h4 strong {
+    font-weight: 700;
+}
+
+.destination-details hr {
+    border-color: var(--color-border-stroke-default);
+}
+
+.destination-details p {
+    font-weight: 100;
+}
+
+
+.destination-details ul {
+    margin: 0;
+}
+
+.destination-details li {
+    flex: 1 0 0;
+    min-width: 0;
+}
+
+.destination-details li p {
+    font-size: 16px;
+}
+
+.destination-details .airport ul {
+    display: flex;
+    gap: 16px;
+}
+
+.destination-details .airport li {
+    flex: 1 0 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.destination-details .airport li br {
+    display: none;
+}
+
+/* Ensure proper spacing for nested components */
+.destination-details-container > * {
+  margin: 0;
+}
+
+/* Responsive padding adjustments */
+@media (max-width: 1024px) {
+  .destination-details li {
+    flex: 0 0 100%;
+  }
+
+  section.section[data-section-type='hero-destinations-detail'] {
+      flex-direction: column;
+      width: 100%;
+
+      p {
+          margin: 0;
+      }
+  }
+
+  section.section[data-section-type='hero-destinations-detail'] .cms-rich-text-wrapper {
+    align-self: baseline;
+    max-width: none;
+  }
+
+  section.section[data-section-type='hero-destinations-detail'] .default-content-wrapper {
+    img {
+      width: 100%;
+      height: auto;
+    }
+  }
+
+  .destination-details-container {
+    padding: 0;
+  }
+
+  .destination-details .airport ul {
+      flex-wrap: wrap;
+  }
+
+  .destination-details .airport li {
+    flex: 0 0 100%;
+  }
+}
