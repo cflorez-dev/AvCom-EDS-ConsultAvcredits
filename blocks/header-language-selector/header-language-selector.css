@@ -39,3 +39,7 @@ header .avi-header-actions [data-button="true"]:focus:not(:focus-visible):not(:a
 .language-indicator.is-active::before {
   background-color: var(--icon-accent-positive);
 }
+
+header .avi-language-search [data-button="true"] span {
+  line-height: normal;
+}
