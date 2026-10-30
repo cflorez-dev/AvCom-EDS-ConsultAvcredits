@@ -129,11 +129,8 @@ export const AvCreditsBanner = ({
           ` : null}
         </div>
 
-        <!-- Cuerpo del Tiquete con Muescas (Notches) -->
-        <div class="avcredits-ticket-body bg-white">
-          <div class="avcredits-notch-left"></div>
-          <div class="avcredits-notch-right"></div>
-
+        <!-- Cuerpo del Tiquete (Sin divs de muescas) -->
+        <div class="avcredits-ticket-body">
           <div class="flex flex-col ticket-col-1 gap-small">
             <span class="paragraph-p300 text-primary">${labels.balanceText}</span>
             <span class="heading-h700 text-primary">${currentBalance}</span>
