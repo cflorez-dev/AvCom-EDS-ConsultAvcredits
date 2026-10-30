@@ -1,0 +1,19 @@
+{
+  "mappings": [
+    "/content/consult-avcredits/:/",
+    "/content/consult-avcredits/configuration:/.helix/config.json",
+    "/content/consult-avcredits/briefofertas:/briefofertas.json",
+    "/content/consult-avcredits/iata:/iata.json",
+    "/content/consult-avcredits/countireslist:/countireslist.json",
+    "/content/consult-avcredits/languageslist:/languageslist.json",
+    "/content/consult-avcredits/i18/en:/en.json",
+    "/content/consult-avcredits/i18/es:/es.json",
+    "/content/consult-avcredits/i18/pt:/pt.json",
+    "/content/consult-avcredits/i18/fr:/fr.json",
+    "/content/consult-avcredits/metadata:/metadata.json",
+    "/content/consult-avcredits/environment:/environment.json"
+  ],
+  "includes": [
+    "/content/consult-avcredits/"
+  ]
+}
