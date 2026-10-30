@@ -1,6 +1,13 @@
-/* Fuerza el borde verde en el botón principal al abrir el dropdown */
-.force-green-border[data-open="true"] {
-  border-color: #0b9b3a !important;
+.force-green-border[data-button]:focus:not(:focus-visible):not(:active)[data-open="true"] {
+  border-color: var(--green-primary) !important;
+}
+
+.force-green-border[data-button][data-open="true"] {
+  border-color: var(--green-primary) !important;
+}
+
+header .avi-header-actions [data-button="true"]:focus:not(:focus-visible):not(:active), header .avi-language-search [data-button="true"]:focus:not(:focus-visible):not(:active) {
+  border-color: var(--color-border-stroke-default) !important;
 }
 
 .header-language-selector {
