@@ -11,6 +11,11 @@ function mapBlockData(block) {
   const divs = Array.from(block.querySelectorAll(':scope > div'));
   const validCountries = ['co', 'ar', 'mx', 'pe', 'ec', 'sv', 'cr', 'br', 'bo', 'cl', 'ca', 'gt', 'hn', 'ni', 'pa', 'py', 'do', 'eu', 'gb', 'uy', 'ot', 'us'];
   let startIndex = 0;
+
+  const userActionsDiv = document.querySelector('.user-actions');
+  if (userActionsDiv && userActionsDiv.innerHTML.trim() === '') {
+    userActionsDiv.style.display = 'none';
+  }
   
   if (divs.length >= 2) {
     const firstRowValue = divs[0]?.children[0]?.textContent?.trim().toLowerCase();
