@@ -600,3 +600,7 @@ html.members-gate-pending body::after {
 @media (prefers-reduced-motion: reduce) {
   html.members-gate-pending body::after { animation: none; }
 }
+
+input::-ms-reveal {
+  display: none;
+}
