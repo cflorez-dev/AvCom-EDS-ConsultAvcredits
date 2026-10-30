@@ -320,10 +320,17 @@ export const ConsultAvCreditsForm = ({
 
         setTimeout(() => {
           const avCreditsBlock = document.querySelector('.avcredits-banner-container');
+          
           if (avCreditsBlock) {
-            avCreditsBlock.scrollIntoView({ 
-              behavior: 'smooth',
-              block: 'start'
+            const elementRect = avCreditsBlock.getBoundingClientRect().top;
+            
+            const elementPosition = elementRect + window.scrollY;
+            
+            const offsetPosition = elementPosition - 50
+          
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
             });
           }
         }, 100);
