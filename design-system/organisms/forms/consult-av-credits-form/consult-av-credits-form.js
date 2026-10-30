@@ -136,10 +136,10 @@ export const ConsultAvCreditsForm = ({
     const loadLabels = async () => {
       if (!i18Cache) {
         const cookieLanguage = getStoredLanguage() || 'es';
-        const i18Data = await fetchAEMData(`i18/${cookieLanguage}`);
+        const i18Data = await fetchAEMData(`${cookieLanguage}`);
         i18Cache = i18Data?.data || [];
         if (cookieLanguage !== 'es' && !i18FallbackCache) {
-          const esFallback = await fetchAEMData('i18/es');
+          const esFallback = await fetchAEMData('es');
           i18FallbackCache = esFallback?.data || [];
         }
       }
@@ -177,8 +177,6 @@ export const ConsultAvCreditsForm = ({
         notFoundImageAlt: getI18nLabel('ConsultAvCreditsForm.modalNotFound.imageAlt', ''),
         errorImageAlt: getI18nLabel('ConsultAvCreditsForm.modalError.imageAlt', ''),
         errorQcImageAlt: getI18nLabel('ConsultAvCreditsForm.modalErrorQc.imageAlt', ''),
-        notFoundAvCredits: getI18nLabel('ConsultAvCreditsForm.error.notFoundAvCredits', 'Revisa los 16 dígitos de tu número Avianca Credits.'),
-        notFoundPin: getI18nLabel('ConsultAvCreditsForm.error.notFoundPin', 'Revisa los 6 dígitos de tu PIN.'),
         formAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.form', 'Formulario de consulta avianca credits'),
         submitAriaLabel: getI18nLabel('ConsultAvCreditsForm.aria.submitButton', 'Consultar avianca credits'),
       });
@@ -227,8 +225,6 @@ export const ConsultAvCreditsForm = ({
     e.preventDefault();
   };
 
-  const closeModal = () => setActiveModal(null);
-
   const handleClearInputsClose = () => {
     if (activeModal === BALANCE_RESULT.MAX_RETRIES) {
       resetRetryCount();
@@ -237,11 +233,6 @@ export const ConsultAvCreditsForm = ({
     setActiveModal(null);
     setNumberAvCredits('');
     setPin('');
-    document.getElementById('number-av-credits')?.focus();
-  };
-
-  const handleNotFoundClose = () => {
-    setActiveModal(null);
     document.getElementById('number-av-credits')?.focus();
   };
 
@@ -374,14 +365,6 @@ export const ConsultAvCreditsForm = ({
         setIsSubmitting(false);
         return;
       }
-
-      // Si nuestra nueva función detectó el 10086 o el 10004
-      if (result === BALANCE_RESULT.NOT_FOUND) {
-        setErrors({ 
-          numberAvCredits: labels.notFoundAvCredits, 
-          pin: labels.notFoundPin
-        });
-      }
       
       // Mostramos el modal correspondiente y ocultamos loader
       showLoader(false);
@@ -487,6 +470,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.blockedCardImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.blockedCardButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -498,17 +482,19 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.maxRetriesImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.maxRetriesButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
       isOpen=${activeModal === BALANCE_RESULT.NOT_FOUND}
-      onClose=${handleNotFoundClose}
+      onClose=${handleClearInputsClose}
       title=${labels.notFoundTitle}
       description=${labels.notFoundDescription}
       icon=${resolveModalIcon(BALANCE_RESULT.NOT_FOUND, labels.notFoundImage, modalIconOverride)}
       imageAlt=${labels.notFoundImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.notFoundButton}
-      onPrimaryClick=${handleNotFoundClose}
+      onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -520,6 +506,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.errorImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -531,6 +518,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.errorQcImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorQcButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
   `;
 };
