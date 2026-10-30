@@ -194,6 +194,21 @@
           }
         },
         {
+          "title": "Marquesina",
+          "id": "marquesina",
+          "plugins": {
+            "xwalk": {
+              "page": {
+                "resourceType": "core/franklin/components/block/v1/block",
+                "template": {
+                  "name": "Marquesina",
+                  "model": "marquesina"
+                }
+              }
+            }
+          }
+        },
+        {
           "title": "CMS New Hero Banner",
           "id": "cms-new-hero-banner",
           "plugins": {
