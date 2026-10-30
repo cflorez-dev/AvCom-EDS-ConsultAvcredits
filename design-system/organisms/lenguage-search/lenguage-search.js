@@ -118,15 +118,13 @@ export const CustomLanguageSearch = ({
           onClick=${handleDropdownToggle}
           aria-expanded=${isDropdownOpen}
           data-open=${isDropdownOpen ? 'true' : 'false'}
-          customClassName=${`px-[12px] !rounded-full transition-colors ${isDropdownOpen ? 'force-green-border' : ''}`}
+          customClassName=${`px-[8px] !rounded-full transition-colors ${isDropdownOpen ? 'force-green-border' : ''}`}
         >
           <div class="flex flex-row items-center gap-[8px]">
             
-            <!-- Ícono de Globo Terráqueo -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-              <path d="M2 12h20"></path>
+            <!-- Ýcono de Globo Terráqueo -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M7.99301 1.33301C4.31301 1.33301 1.33301 4.31967 1.33301 7.99967C1.33301 11.6797 4.31301 14.6663 7.99301 14.6663C11.6797 14.6663 14.6663 11.6797 14.6663 7.99967C14.6663 4.31967 11.6797 1.33301 7.99301 1.33301ZM12.613 5.33301H10.6463C10.433 4.49967 10.1263 3.69967 9.72634 2.95967C10.953 3.37967 11.973 4.23301 12.613 5.33301ZM7.99967 2.69301C8.55301 3.49301 8.98634 4.37967 9.27301 5.33301H6.72634C7.01301 4.37967 7.44634 3.49301 7.99967 2.69301ZM2.83967 9.33301C2.73301 8.90634 2.66634 8.45967 2.66634 7.99967C2.66634 7.53967 2.73301 7.09301 2.83967 6.66634H5.09301C5.03967 7.10634 4.99967 7.54634 4.99967 7.99967C4.99967 8.45301 5.03967 8.89301 5.09301 9.33301H2.83967ZM3.38634 10.6663H5.35301C5.56634 11.4997 5.87301 12.2997 6.27301 13.0397C5.04634 12.6197 4.02634 11.773 3.38634 10.6663ZM5.35301 5.33301H3.38634C4.02634 4.22634 5.04634 3.37967 6.27301 2.95967C5.87301 3.69967 5.56634 4.49967 5.35301 5.33301ZM7.99967 13.3063C7.44634 12.5063 7.01301 11.6197 6.72634 10.6663H9.27301C8.98634 11.6197 8.55301 12.5063 7.99967 13.3063ZM9.55967 9.33301H6.43967C6.37967 8.89301 6.33301 8.45301 6.33301 7.99967C6.33301 7.54634 6.37967 7.09967 6.43967 6.66634H9.55967C9.61967 7.09967 9.66634 7.54634 9.66634 7.99967C9.66634 8.45301 9.61967 8.89301 9.55967 9.33301ZM9.72634 13.0397C10.1263 12.2997 10.433 11.4997 10.6463 10.6663H12.613C11.973 11.7663 10.953 12.6197 9.72634 13.0397ZM10.9063 9.33301C10.9597 8.89301 10.9997 8.45301 10.9997 7.99967C10.9997 7.54634 10.9597 7.10634 10.9063 6.66634H13.1597C13.2663 7.09301 13.333 7.53967 13.333 7.99967C13.333 8.45967 13.2663 8.90634 13.1597 9.33301H10.9063Z" fill-rule="evenodd" clip-rule="evenodd" fill="#1B1B1B"/>
             </svg>
 
             <!-- Idioma actual en mayúsculas -->
@@ -134,14 +132,14 @@ export const CustomLanguageSearch = ({
               ${currentLanguage}
             </span>
             
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none" class=${`transition-transform duration-200 flex-shrink-0 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`}>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M11.06 5.72656L8 8.7799L4.94 5.72656L4 6.66656L8 10.6666L12 6.66656L11.06 5.72656Z" fill="currentColor"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M11.06 5.72656L8 8.7799L4.94 5.72656L4 6.66656L8 10.6666L12 6.66656L11.06 5.72656Z" fill-rule="evenodd" clip-rule="evenodd" fill="#1B1B1B"/>
             </svg>
           </div>
         </${Button}>
 
         ${isDropdownOpen ? html`
-          <div class="absolute top-[calc(100%+8px)] right-0 w-[240px] bg-white rounded-[16px] shadow-[0_4px_16px_rgba(27,27,27,0.2)] py-[8px] z-[1000] overflow-hidden">
+          <div class="absolute top-[calc(100%+4px)] right-0 w-[312px] bg-white rounded-[16px] shadow-[0_4px_16px_rgba(73,73,73,0.25)] py-[8px] z-[1000] overflow-hidden">
             <div class="flex flex-col">
               ${allLanguages.map((lang) => {
                 const isSelected = lang.value === currentLanguage;
@@ -149,10 +147,10 @@ export const CustomLanguageSearch = ({
                 return html`
                   <button
                     key=${lang.value}
-                    class="flex items-center w-full text-left transition-colors cursor-pointer border-y-0 border-r-0 border-solid border-l-4 bg-transparent hover:bg-[#f5f5f5]"
+                    class=${`relative flex items-center w-full text-left transition-colors cursor-pointer bg-transparent hover:bg-[#f5f5f5] language-indicator ${isSelected ? 'is-active' : ''}`}
                     style=${{ 
                       padding: '12px 16px',
-                      borderLeftColor: isSelected ? '#0b9b3a' : 'transparent'
+                      minHeight: '48px'
                     }}
                     onClick=${() => handleLanguageSelect(lang.value)}
                     type="button"
@@ -163,14 +161,15 @@ export const CustomLanguageSearch = ({
                       fontSize: '16px',
                       fontFamily: 'var(--font-family-primary)',
                       fontWeight: isSelected ? '700' : '400',
-                      color: isSelected ? '#1b1b1b' : '#4a4a4a'
+                      color: '#1b1b1b',
+                      lineHeight: 'normal'
                     }}>
                       ${lang.label || lang.value}
                     </span>
                     
                     ${isSelected ? html`
-                      <svg class="ml-auto" style=${{ color: '#0b9b3a', width: '22px', height: '22px', flexShrink: '0' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+                      <svg class="ml-auto" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M8.59 15.58L4.42 11.41L3 12.82L8.59 18.41L20.59 6.41L19.18 5L8.59 15.58Z" fill-rule="evenodd" clip-rule="evenodd" fill="#1EA93C"/>
                       </svg>
                     ` : null}
                   </button>

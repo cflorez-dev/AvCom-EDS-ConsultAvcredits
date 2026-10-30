@@ -199,10 +199,16 @@ export const Input = ({
     }
   };
 
-  // Handle container click to focus input
-  const handleContainerClick = () => {
-    if (isInteractive && inputRef.current) {
-      inputRef.current.focus();
+  // Handle container click (mousedown) to focus input without blurring it first
+  const handleContainerMouseDown = (e) => {
+    if (isInteractive) {
+      if (e.target.tagName !== 'INPUT') {
+        e.preventDefault(); 
+      }
+      
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   };
 
@@ -210,6 +216,13 @@ export const Input = ({
   useEffect(() => {
     setInputValue(value);
   }, [value]);
+
+  // Recuperar el foco automáticamente cuando el input principal reaparece
+  useEffect(() => {
+    if (isFocused && shouldFloat && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFocused, shouldFloat]);
 
   return html`
     <div
@@ -222,7 +235,7 @@ export const Input = ({
         <div class="relative ${isMembers ? 'w-fit min-w-full' : 'w-full'} min-w-0">
       <!-- Input Container -->
       <div
-        onClick=${handleContainerClick}
+        onMouseDown=${handleContainerMouseDown}
         class=${`
           relative flex items-center gap-2 ${isMembers ? 'w-fit min-w-full' : 'w-full'} h-[64px]
           px-[var(--padding-16)] pt-3 pb-3
