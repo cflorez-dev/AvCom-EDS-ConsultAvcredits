@@ -470,6 +470,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.blockedCardImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.blockedCardButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -481,6 +482,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.maxRetriesImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.maxRetriesButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -492,6 +494,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.notFoundImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.notFoundButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -503,6 +506,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.errorImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
 
     <${ModalAviancaLayout}
@@ -514,6 +518,7 @@ export const ConsultAvCreditsForm = ({
       imageAlt=${labels.errorQcImageAlt || modalImageAlt}
       primaryButtonLabel=${labels.errorQcButton}
       onPrimaryClick=${handleClearInputsClose}
+      customClassName="consult-modal"
     />
   `;
 };
