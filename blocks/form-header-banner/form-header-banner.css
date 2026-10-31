@@ -1,0 +1,11 @@
+.consult-modal section h2 {
+    font-size: 1.5rem;
+}
+
+.consult-modal button {
+    display: flex;
+}
+
+.consult-modal .text-text-normal-secondary {
+    padding: 0;
+}
