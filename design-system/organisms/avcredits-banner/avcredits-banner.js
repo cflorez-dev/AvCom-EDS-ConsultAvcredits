@@ -71,10 +71,10 @@ export const AvCreditsBanner = ({
     const loadLabels = async () => {
       if (!i18Cache) {
         const cookieLanguage = getStoredLanguage() || 'es';
-        const i18Data = await fetchAEMData(`${cookieLanguage}`);
+        const i18Data = await fetchAEMData(`i18/${cookieLanguage}`);
         i18Cache = i18Data?.data || [];
         if (cookieLanguage !== 'es' && !i18FallbackCache) {
-          const esFallback = await fetchAEMData('es');
+          const esFallback = await fetchAEMData('i18/es');
           i18FallbackCache = esFallback?.data || [];
         }
       }
