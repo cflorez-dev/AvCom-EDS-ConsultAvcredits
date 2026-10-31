@@ -89,7 +89,7 @@ export const getHreflangData = async () => getCurrentPageAlternates();
  * @returns {Promise<string>} The resolved URL to redirect to
  */
 export const resolveHreflangRedirectUrl = async (targetLanguage, { pathname } = {}) => {
-  const fallbackUrl = `/${targetLanguage}/`;
+  const fallbackUrl = `/${targetLanguage}`;
 
   if (!targetLanguage || !SUPPORTED_LANGUAGES.includes(targetLanguage)) {
     return fallbackUrl;
