@@ -52,7 +52,7 @@ export const mapValidateResult = ({ ok, status, body }) => {
 
   // Información no encontrada y máximo de reintentos
   if (responseCode === '1110') {
-    eventDataSuccess(card['card-status'], card['card-type']);
+    eventDataError(responseMessage, responseCode);
     
     if (responseMessage.includes('10086')) {
       retryCount += 1;
