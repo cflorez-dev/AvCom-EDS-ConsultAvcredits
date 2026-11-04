@@ -18,7 +18,7 @@ export const resetRetryCount = () => {
 export const mapValidateResult = ({ ok, status, body }) => {
   if (!ok || status.code !== '200') {
     eventDataError(status.desc, status.code);
-    return BALANCE_RESULT.ERROR;
+    return BALANCE_RESULT.ERROR_QC;
   }
   
   if (!ok || !body || typeof body !== 'object') {
