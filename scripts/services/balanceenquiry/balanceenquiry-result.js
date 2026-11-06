@@ -52,7 +52,8 @@ export const mapValidateResult = ({ ok, status, body }) => {
 
   // Información no encontrada y máximo de reintentos
   if (responseCode === '1110') {
-    eventDataError(responseMessage, responseCode);
+    const [codeAnl, ...restAnl] = responseMessage.split(' - ');
+    eventDataError(restAnl.join(' - ').trim(), codeAnl.trim());
     
     if (responseMessage.includes('10086')) {
       retryCount += 1;
