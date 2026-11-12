@@ -17,7 +17,7 @@ export const resetRetryCount = () => {
 
 export const mapValidateResult = ({ ok, status, body }) => {
   if (!ok || status.code !== '200') {
-    eventDataError(status.desc, status.code);
+    eventDataError(body?.error ?? status?.desc, status.code);
     return BALANCE_RESULT.ERROR;
   }
   
@@ -52,7 +52,7 @@ export const mapValidateResult = ({ ok, status, body }) => {
 
   // Información no encontrada y máximo de reintentos
   if (responseCode === '1110') {
-    eventDataSuccess(card['card-status'], card['card-type']);
+    eventDataError(responseMessage, responseCode);
     
     if (responseMessage.includes('10086')) {
       retryCount += 1;
