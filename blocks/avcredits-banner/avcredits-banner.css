@@ -22,7 +22,12 @@
 .avcredits-ticket-body .paragraph-p300  {
     font-size: 20px;
     line-height: normal;
-}   
+}
+
+.avcredits-ticket-body .font-medium {
+  --tw-font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-medium);
+}
 
 @media (min-width: 1024px) {
   .avcredits-container {
