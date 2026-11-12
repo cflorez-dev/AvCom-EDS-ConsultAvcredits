@@ -337,8 +337,7 @@ export const ConsultAvCreditsForm = ({
       onError({ result, response });
 
     } catch (error) {
-      console.error('[consult-av-credits-form] balance failed:', error);
-      eventDataError(error, '501');
+      eventDataError(error.message, '501');
       showLoader(false);
       setActiveModal(BALANCE_RESULT.ERROR);
       onError({ result: BALANCE_RESULT.ERROR, error });
