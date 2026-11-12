@@ -43,6 +43,9 @@ export const mapValidateResult = ({ ok, status, body }) => {
   // Éxito
   if (isEligibleScenario) {
     resetRetryCount();
+    if (Number(card.balance) === 0) {
+      card['card-status'] = 'Insufficient_funds';
+    }
     eventDataSuccess(card['card-status'], card['card-type']);
     return BALANCE_RESULT.ELIGIBLE;
   }
