@@ -137,4 +137,27 @@
 <link rel="modulepreload" crossorigin="anonymous" href="/core/scripts/services/loader/loader.service.js" />
 
 <script nonce="aem" src="/core/scripts/aem.js" type="module"></script>
+
+<script nonce="aem">
+(function () {
+  try {
+    // Aplicar sólo en entornos dev/author (descomenta si quieres limitarlo)
+    // if (!window.location.hostname.includes('dev') && !window.location.hostname.includes('author')) return;
+
+    const cookieMatch = document.cookie.match(/(?:^|; )selected-country=([^;]+)/);
+    const currentPos = cookieMatch ? String(cookieMatch[1]).toLowerCase() : null;
+    if (typeof sessionStorage !== 'undefined') {
+      if (currentPos) {
+        sessionStorage.setItem('geo-conflict-dismissed-poses', JSON.stringify([currentPos]));
+      } else {
+        // Fallback: evita la modal si no hay cookie
+        sessionStorage.setItem('geo-conflict-dismissed-poses', JSON.stringify(['__any__']));
+      }
+      // Limpia cualquier tag pendiente de conflicto
+      sessionStorage.removeItem('geo-conflict');
+    }
+  } catch (e) { /* no-op */ }
+})();
+</script>
+
 <script nonce="aem" src="/core/scripts/scripts.js" type="module"></script>
