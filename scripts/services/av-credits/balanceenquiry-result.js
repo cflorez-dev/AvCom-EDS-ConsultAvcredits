@@ -17,7 +17,7 @@ export const resetRetryCount = () => {
 
 export const mapValidateResult = ({ ok, status, body }) => {
   if (!ok || status.code !== '200') {
-    eventDataError(status.desc, status.code);
+    eventDataError(body?.error ?? status?.desc, status.code);
     return BALANCE_RESULT.ERROR;
   }
   
@@ -43,13 +43,17 @@ export const mapValidateResult = ({ ok, status, body }) => {
   // Éxito
   if (isEligibleScenario) {
     resetRetryCount();
+    if (Number(card.balance) === 0) {
+      card['card-status'] = 'Insufficient_funds';
+    }
     eventDataSuccess(card['card-status'], card['card-type']);
     return BALANCE_RESULT.ELIGIBLE;
   }
 
   // Información no encontrada y máximo de reintentos
   if (responseCode === '1110') {
-    eventDataSuccess(card['card-status'], card['card-type']);
+    const [codeAnl, ...restAnl] = responseMessage.split(' - ');
+    eventDataError(restAnl.join(' - ').trim(), codeAnl.trim());
     
     if (responseMessage.includes('10086')) {
       retryCount += 1;

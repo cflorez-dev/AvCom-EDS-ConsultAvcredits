@@ -28,7 +28,7 @@ const withTimeout = (run, ms) => {
   const deadline = new Promise((_, reject) => {
     timer = setTimeout(() => {
       controller.abort();
-      reject(new Error(`[consult-av-credits-form] balance excedió el tiempo límite de ${ms}ms`));
+      reject(new Error('Balance Enquiry timed out'));
     }, ms);
   });
   const attempt = run(controller.signal);
